@@ -7,12 +7,13 @@ import { Separator } from "@/components/ui/separator";
 import {
   Trophy, Target, TrendingUp, AlertTriangle, CheckCircle,
   Download, Award, Star, Zap, Shield, Users, DollarSign,
-  FileText, ArrowRight, Loader2
+  FileText, ArrowRight, Loader2, Sparkles
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import logoMiprojet from "@/assets/logo-miprojet-new.png";
 import cachetMiprojet from "@/assets/cachet-miprojet.png";
 import signatureDG from "@/assets/signature-dg.png";
+import { interpretScore, getMaturityLevel, getNextSteps, computeMaturityLevel, EVALUATION_AXES } from "@/lib/evaluation";
 
 interface EvaluationData {
   id: string;
@@ -24,12 +25,18 @@ interface EvaluationData {
   score_maturite: number;
   score_impact: number;
   score_equipe: number;
+  score_juridique?: number;
+  score_technique?: number;
+  score_marche?: number;
   niveau: string;
+  niveau_maturite?: number | null;
   is_certified: boolean;
   resume: string | null;
   forces: string[];
   faiblesses: string[];
   recommandations: string[];
+  prochaines_etapes?: string[] | null;
+  interpretation?: string | null;
   actions_structuration: string[];
   messages_strategiques: string[];
   created_at: string;
@@ -249,14 +256,42 @@ export const EvaluationResult = ({ evaluation, projectTitle, onClose }: Evaluati
         </div>
       </div>
 
-      {/* Main Score */}
-      <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-        <CardContent className="py-8 text-center">
-          <div className="text-7xl font-bold mb-2">{evaluation.score_global}</div>
-          <p className="text-primary-foreground/80">Score Global sur 100</p>
-          <p className="mt-2 text-lg font-medium">{getLevelLabel(evaluation.niveau)}</p>
-        </CardContent>
-      </Card>
+      {/* Main Score with auto interpretation (Module 8) */}
+      {(() => {
+        const interp = interpretScore(evaluation.score_global);
+        const maturityLevel = evaluation.niveau_maturite ?? computeMaturityLevel(evaluation.score_global);
+        const maturity = getMaturityLevel(maturityLevel);
+        const nextSteps = evaluation.prochaines_etapes?.length ? evaluation.prochaines_etapes : getNextSteps(evaluation.score_global);
+        return (
+          <>
+            <Card className={`bg-gradient-to-br from-primary to-primary/80 text-primary-foreground`}>
+              <CardContent className="py-8 text-center">
+                <div className="text-7xl font-bold mb-2">{evaluation.score_global}</div>
+                <p className="text-primary-foreground/80 mb-2">Score Global sur 100</p>
+                <Badge className={`${interp.bgClass} text-white text-lg py-2 px-6 mb-3`}>
+                  {interp.label}
+                </Badge>
+                <p className="text-sm text-primary-foreground/90 max-w-xl mx-auto">{interp.description}</p>
+              </CardContent>
+            </Card>
+
+            {maturity && (
+              <Card className="border-primary/20">
+                <CardContent className="py-4 flex items-center gap-4">
+                  <div className="bg-primary/10 rounded-full p-3">
+                    <Sparkles className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-muted-foreground uppercase">Niveau de maturité</p>
+                    <p className="font-bold text-lg">Niveau {maturity.level} — {maturity.label}</p>
+                    <p className="text-sm text-muted-foreground">{maturity.description}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </>
+        );
+      })()}
 
       {/* Scores by Axis */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
