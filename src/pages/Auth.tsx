@@ -22,7 +22,8 @@ const signupSchema = loginSchema.extend({
   firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
   lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   whatsapp: z.string().min(8, "Numéro WhatsApp invalide"),
-});
+
+const REFERRAL_KEY = "miprojet_pending_ref";
 
 const countryCodes = [
   { code: "+225", country: "🇨🇮 Côte d'Ivoire" },
