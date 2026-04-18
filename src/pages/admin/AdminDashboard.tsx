@@ -21,7 +21,7 @@ import { AdminRequestsTable } from "@/components/admin/AdminRequestsTable";
 import { AdminKPICharts } from "@/components/admin/AdminKPICharts";
 import { AdminNewsManager } from "@/components/admin/AdminNewsManager";
 import { AdminFAQManager } from "@/components/admin/AdminFAQManager";
-import { AdminPaymentsTable } from "@/components/admin/AdminPaymentsTable";
+import { AdminPaymentsJournal } from "@/components/admin/AdminPaymentsJournal";
 import { AdminInvoicesTable } from "@/components/admin/AdminInvoicesTable";
 import { AdminGuide } from "@/components/admin/AdminGuide";
 import { AdminAccessRequests } from "@/components/admin/AdminAccessRequests";
@@ -194,7 +194,7 @@ const AdminDashboard = () => {
             </TabsContent>
             
             <TabsContent value="payments" className="space-y-6">
-              <AdminPaymentsTable />
+              <AdminPaymentsJournal />
             </TabsContent>
             
             <TabsContent value="admin-guide" className="space-y-6">
