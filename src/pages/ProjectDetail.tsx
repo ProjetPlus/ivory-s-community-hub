@@ -232,8 +232,12 @@ const ProjectDetail = () => {
             
             <div className="grid lg:grid-cols-2 gap-8">
               <div>
-                <div className="flex gap-2 mb-4">
-                  <Badge variant="secondary">{project.category}</Badge>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <Badge variant="secondary" className="font-mono">
+                    <Hash className="h-3 w-3 mr-1" />
+                    {formatProjectDisplayId(project.display_id, project.id)}
+                  </Badge>
+                  {project.category && <Badge variant="secondary">{project.category}</Badge>}
                   {project.risk_score && (
                     <Badge className={riskColors[project.risk_score] || 'bg-muted'}>
                       Score: {project.risk_score}
