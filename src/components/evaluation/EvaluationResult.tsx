@@ -25,12 +25,18 @@ interface EvaluationData {
   score_maturite: number;
   score_impact: number;
   score_equipe: number;
+  score_juridique?: number;
+  score_technique?: number;
+  score_marche?: number;
   niveau: string;
+  niveau_maturite?: number | null;
   is_certified: boolean;
   resume: string | null;
   forces: string[];
   faiblesses: string[];
   recommandations: string[];
+  prochaines_etapes?: string[] | null;
+  interpretation?: string | null;
   actions_structuration: string[];
   messages_strategiques: string[];
   created_at: string;
