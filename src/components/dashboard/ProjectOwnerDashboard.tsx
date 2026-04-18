@@ -10,6 +10,8 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { InvoiceHistory } from "@/components/dashboard/InvoiceHistory";
 import { EvaluationsTab } from "@/components/dashboard/EvaluationsTab";
+import { UserJourney } from "@/components/dashboard/UserJourney";
+import { ReferralTab } from "@/components/dashboard/ReferralTab";
 import {
   FolderKanban, FileText, MessageSquare, Plus,
   Eye, Settings, Clock, CheckCircle, Award, ArrowRight,
@@ -197,14 +199,24 @@ export const ProjectOwnerDashboard = () => {
 
       {/* Tabs */}
       <Tabs defaultValue="projects" className="space-y-4">
-        <TabsList className="w-full sm:w-auto grid grid-cols-6 sm:inline-flex">
+        <TabsList className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-8 sm:inline-flex">
           <TabsTrigger value="projects" className="text-xs sm:text-sm">Projets</TabsTrigger>
+          <TabsTrigger value="journey" className="text-xs sm:text-sm">Parcours</TabsTrigger>
           <TabsTrigger value="subscription" className="text-xs sm:text-sm">Abonnement</TabsTrigger>
           <TabsTrigger value="evaluations" className="text-xs sm:text-sm">Évaluations</TabsTrigger>
           <TabsTrigger value="requests" className="text-xs sm:text-sm">Demandes</TabsTrigger>
           <TabsTrigger value="invoices" className="text-xs sm:text-sm">Factures</TabsTrigger>
+          <TabsTrigger value="referrals" className="text-xs sm:text-sm">Parrainage</TabsTrigger>
           <TabsTrigger value="messages" className="text-xs sm:text-sm">Messages</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="journey" className="space-y-4">
+          <UserJourney />
+        </TabsContent>
+
+        <TabsContent value="referrals" className="space-y-4">
+          <ReferralTab />
+        </TabsContent>
 
         <TabsContent value="projects" className="space-y-4">
           {projects.length === 0 ? (
