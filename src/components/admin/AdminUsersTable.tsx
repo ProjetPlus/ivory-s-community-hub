@@ -21,7 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Search, Eye, Shield, UserX, Mail, Plus, Loader2, UserPlus, Users } from "lucide-react";
+import { MoreHorizontal, Search, Eye, Shield, UserX, Mail, Plus, Loader2, UserPlus, Users, Phone, UserCheck } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
@@ -29,9 +29,11 @@ interface UserProfile {
   id: string;
   first_name: string | null;
   last_name: string | null;
+  email: string | null;
   phone: string | null;
   user_type: string | null;
   is_verified: boolean | null;
+  account_status: string | null;
   created_at: string;
   role?: string;
 }
@@ -191,7 +193,21 @@ export const AdminUsersTable = () => {
     }
   };
 
-  const getRoleBadge = (role: string) => {
+  const setAccountStatus = async (userId: string, status: 'active' | 'suspended', reason?: string) => {
+    try {
+      const updates: any = {
+        account_status: status,
+        suspended_at: status === 'suspended' ? new Date().toISOString() : null,
+        suspended_reason: status === 'suspended' ? (reason || 'Suspension administrative') : null,
+      };
+      const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
+      if (error) throw error;
+      toast({ title: status === 'active' ? 'Compte activé' : 'Compte suspendu' });
+      fetchUsers();
+    } catch (e: any) {
+      toast({ title: 'Erreur', description: e.message, variant: 'destructive' });
+    }
+  };
     const variants: Record<string, { variant: "default" | "secondary" | "destructive" | "outline", className: string }> = {
       admin: { variant: "destructive", className: "bg-destructive" },
       moderator: { variant: "default", className: "bg-warning text-warning-foreground" },
@@ -407,10 +423,12 @@ export const AdminUsersTable = () => {
                   </TableCell>
                   <TableCell>{getRoleBadge(user.role || 'user')}</TableCell>
                   <TableCell>
-                    {user.is_verified ? (
+                    {user.account_status === 'suspended' ? (
+                      <Badge variant="destructive">Suspendu</Badge>
+                    ) : user.is_verified ? (
                       <Badge className="bg-success text-success-foreground">Vérifié</Badge>
                     ) : (
-                      <Badge variant="outline">Non vérifié</Badge>
+                      <Badge variant="outline">Actif</Badge>
                     )}
                   </TableCell>
                   <TableCell>
@@ -427,9 +445,20 @@ export const AdminUsersTable = () => {
                         <DropdownMenuItem>
                           <Eye className="mr-2 h-4 w-4" /> Voir profil
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Mail className="mr-2 h-4 w-4" /> Envoyer email
-                        </DropdownMenuItem>
+                        {user.email && (
+                          <DropdownMenuItem asChild>
+                            <a href={`mailto:${user.email}`}>
+                              <Mail className="mr-2 h-4 w-4" /> Contacter par email
+                            </a>
+                          </DropdownMenuItem>
+                        )}
+                        {user.phone && (
+                          <DropdownMenuItem asChild>
+                            <a href={`https://wa.me/${user.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                              <Phone className="mr-2 h-4 w-4" /> Contacter WhatsApp
+                            </a>
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem onClick={() => assignRole(user.id, 'admin')}>
                           <Shield className="mr-2 h-4 w-4" /> Définir Admin
                         </DropdownMenuItem>
@@ -439,9 +468,15 @@ export const AdminUsersTable = () => {
                         <DropdownMenuItem onClick={() => assignRole(user.id, 'user')}>
                           <Shield className="mr-2 h-4 w-4" /> Définir User
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
-                          <UserX className="mr-2 h-4 w-4" /> Désactiver
-                        </DropdownMenuItem>
+                        {user.account_status === 'suspended' ? (
+                          <DropdownMenuItem onClick={() => setAccountStatus(user.id, 'active')} className="text-success">
+                            <UserCheck className="mr-2 h-4 w-4" /> Activer le compte
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem onClick={() => setAccountStatus(user.id, 'suspended')} className="text-destructive">
+                            <UserX className="mr-2 h-4 w-4" /> Suspendre
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
