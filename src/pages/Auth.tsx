@@ -24,6 +24,8 @@ const signupSchema = loginSchema.extend({
   whatsapp: z.string().min(8, "Numéro WhatsApp invalide"),
 });
 
+const REFERRAL_KEY = "miprojet_pending_ref";
+
 const countryCodes = [
   { code: "+225", country: "🇨🇮 Côte d'Ivoire" },
   { code: "+228", country: "🇹🇬 Togo" },

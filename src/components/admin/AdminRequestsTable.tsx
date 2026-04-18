@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { 
   Search, Eye, CheckCircle, XCircle, Clock, 
   FileText, Building2, MoreHorizontal,
-  Download
+  Download, Mail, Phone
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -30,6 +30,8 @@ interface ServiceRequest {
     first_name: string | null;
     last_name: string | null;
     email?: string | null;
+    phone?: string | null;
+    whatsapp?: string | null;
   };
 }
 
@@ -70,7 +72,21 @@ export const AdminRequestsTable = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setRequests(data || []);
+
+      // Fetch profiles separately for each unique user
+      const userIds = [...new Set((data || []).map((r: any) => r.user_id))];
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, email, phone, whatsapp')
+        .in('id', userIds);
+      const profilesMap = new Map((profilesData || []).map((p: any) => [p.id, p]));
+
+      const enriched = (data || []).map((r: any) => ({
+        ...r,
+        profiles: profilesMap.get(r.user_id) || null,
+      }));
+
+      setRequests(enriched as ServiceRequest[]);
     } catch (error) {
       console.error('Error fetching requests:', error);
       toast({
@@ -245,6 +261,12 @@ export const AdminRequestsTable = () => {
                           <div className="font-medium">
                             {request.profiles?.first_name} {request.profiles?.last_name}
                           </div>
+                          {request.profiles?.email && (
+                            <div className="text-xs text-muted-foreground">{request.profiles.email}</div>
+                          )}
+                          {(request.profiles?.phone || request.profiles?.whatsapp) && (
+                            <div className="text-xs text-muted-foreground">{request.profiles?.phone || request.profiles?.whatsapp}</div>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="max-w-[200px] truncate">
@@ -269,7 +291,19 @@ export const AdminRequestsTable = () => {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
+                          <div className="flex items-center justify-end gap-1">
+                            {request.profiles?.email && (
+                              <Button variant="ghost" size="icon" asChild title="Email">
+                                <a href={`mailto:${request.profiles.email}`}><Mail className="h-4 w-4" /></a>
+                              </Button>
+                            )}
+                            {(request.profiles?.whatsapp || request.profiles?.phone) && (
+                              <Button variant="ghost" size="icon" asChild title="WhatsApp">
+                                <a href={`https://wa.me/${(request.profiles?.whatsapp || request.profiles?.phone || '').replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                                  <Phone className="h-4 w-4" />
+                                </a>
+                              </Button>
+                            )}
                             <Button 
                               variant="ghost" 
                               size="icon"

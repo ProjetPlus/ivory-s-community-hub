@@ -37,18 +37,27 @@ export const AdminFirecrawlScraper = () => {
         `${query} opportunités investissement Afrique financement`,
         { limit: 10, lang: "fr", country: "CI" }
       );
-      if (response.success && response.data) {
-        const items: ScrapedOpportunity[] = (response.data as any[]).map((r: any) => ({
-          title: r.title || "Sans titre",
-          description: r.description || r.markdown?.substring(0, 300) || "",
+      // Firecrawl v1 returns { success, data: [...] } OR sometimes { success, web: [...] }
+      const raw: any = response;
+      const list: any[] = Array.isArray(raw?.data)
+        ? raw.data
+        : Array.isArray(raw?.data?.data)
+          ? raw.data.data
+          : Array.isArray(raw?.web)
+            ? raw.web
+            : [];
+      if (raw?.success !== false && list.length > 0) {
+        const items: ScrapedOpportunity[] = list.map((r: any) => ({
+          title: r.title || r.metadata?.title || "Sans titre",
+          description: r.description || r.snippet || (r.markdown ? String(r.markdown).substring(0, 300) : ""),
           category: "general",
-          source_url: r.url || "",
+          source_url: r.url || r.link || "",
           selected: false,
         }));
         setResults(items);
         if (items.length === 0) toast({ title: "Aucun résultat", description: "Aucune opportunité trouvée pour cette recherche." });
       } else {
-        toast({ title: "Erreur", description: response.error || "Échec de la recherche", variant: "destructive" });
+        toast({ title: "Erreur", description: raw?.error || "Échec de la recherche — vérifiez la clé Firecrawl", variant: "destructive" });
       }
     } catch (e) {
       toast({ title: "Erreur", description: "Impossible de contacter Firecrawl", variant: "destructive" });
@@ -61,19 +70,23 @@ export const AdminFirecrawlScraper = () => {
     setLoading(true);
     setResults([]);
     try {
-      const response = await firecrawlApi.scrape(url, { formats: ["markdown"], onlyMainContent: true });
-      if (response.success) {
-        const content = (response as any).data?.markdown || (response as any).markdown || "";
-        const title = (response as any).data?.metadata?.title || (response as any).metadata?.title || "Opportunité scrapée";
-        setResults([{
-          title,
-          description: content.substring(0, 500),
-          category: "general",
-          source_url: url,
-          selected: true,
-        }]);
+      const response: any = await firecrawlApi.scrape(url, { formats: ["markdown"], onlyMainContent: true });
+      if (response?.success !== false) {
+        const content = response.markdown || response.data?.markdown || "";
+        const title = response.metadata?.title || response.data?.metadata?.title || "Opportunité scrapée";
+        if (!content) {
+          toast({ title: "Aucun contenu", description: "La page n'a retourné aucun contenu exploitable" });
+        } else {
+          setResults([{
+            title,
+            description: content.substring(0, 500),
+            category: "general",
+            source_url: url,
+            selected: true,
+          }]);
+        }
       } else {
-        toast({ title: "Erreur", description: response.error || "Échec du scraping", variant: "destructive" });
+        toast({ title: "Erreur", description: response?.error || "Échec du scraping", variant: "destructive" });
       }
     } catch (e) {
       toast({ title: "Erreur", description: "Impossible de scraper cette URL", variant: "destructive" });
