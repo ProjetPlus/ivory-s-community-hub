@@ -14,8 +14,11 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import {
   MapPin, Calendar, Users, Target, TrendingUp, Share2, Heart,
-  MessageCircle, FileText, Clock, Shield, Award, ArrowLeft
+  MessageCircle, FileText, Clock, Shield, Award, ArrowLeft, Hash,
+  ClipboardList, BarChart3, CheckCircle, AlertTriangle, ArrowRight
 } from "lucide-react";
+import { formatProjectDisplayId } from "@/lib/projectId";
+import { interpretScore, getMaturityLevel, EVALUATION_AXES } from "@/lib/evaluation";
 
 interface Project {
   id: string;
