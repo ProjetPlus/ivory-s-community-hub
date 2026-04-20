@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ArrowRight, ArrowLeft, FileText, CheckCircle, Upload, Send } from "lucide-react";
+import { trackLead } from "@/lib/leadTracking";
 
 const sectors = [
   "Agriculture", "Tech & Digital", "Éducation", "Santé", "Commerce",
@@ -76,7 +77,7 @@ export const StructuringForm = () => {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase.from("service_requests").insert({
+      const { data: insertedReq, error } = await supabase.from("service_requests").insert({
         user_id: user.id,
         service_type: 'structuring',
         company_name: formData.projectName,
@@ -86,16 +87,28 @@ export const StructuringForm = () => {
         funding_needed: formData.fundingNeeded ? parseFloat(formData.fundingNeeded) : null,
         has_business_plan: formData.needsBusinessPlan,
         status: 'pending',
-      });
+      }).select().single();
 
       if (error) throw error;
 
-      toast({
-        title: "Demande envoyée",
-        description: "Votre demande de structuration a été soumise avec succès. Notre équipe vous contactera sous 48h.",
+      // Track lead from service request
+      await trackLead("service_request", {
+        first_name: user.email?.split("@")[0] || "Client",
+        last_name: "—",
+        email: user.email || "",
+        user_id: user.id,
+        company_name: formData.projectName,
+        sector: formData.sector,
+        source_id: insertedReq?.id,
+        needs: formData.description,
       });
 
-      navigate("/dashboard");
+      toast({
+        title: "Demande envoyée ✅",
+        description: "Étape suivante : évaluez votre projet avec MIPROJET+ pour connaître son niveau de financement.",
+      });
+
+      navigate("/miprojet-plus");
     } catch (error: any) {
       toast({
         title: "Erreur",

@@ -1,4 +1,4 @@
-import { FileText, CheckCircle, TrendingUp, Handshake, Award } from "lucide-react";
+import { FileText, CheckCircle, TrendingUp, Handshake, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -6,36 +6,36 @@ const steps = [
   {
     number: 1,
     icon: FileText,
-    titleKey: "howItWorks.step1.title",
-    descriptionKey: "howItWorks.step1.description",
+    title: "Soumettre son projet",
+    description: "Décrivez votre projet via notre formulaire structuré ISO 21500.",
     color: "text-primary",
   },
   {
     number: 2,
-    icon: CheckCircle,
-    titleKey: "howItWorks.step2.title",
-    descriptionKey: "howItWorks.step2.description",
+    icon: Sparkles,
+    title: "Évaluation MIPROJET+",
+    description: "Score automatique sur 100 et niveau de maturité (1-4).",
     color: "text-info",
   },
   {
     number: 3,
-    icon: TrendingUp,
-    titleKey: "howItWorks.step3.title",
-    descriptionKey: "howItWorks.step3.description",
+    icon: CheckCircle,
+    title: "Analyse & recommandations",
+    description: "Forces, faiblesses et plan d'action personnalisé.",
     color: "text-success",
   },
   {
     number: 4,
-    icon: Award,
-    titleKey: "howItWorks.step4.title",
-    descriptionKey: "howItWorks.step4.description",
+    icon: TrendingUp,
+    title: "Structuration",
+    description: "Business plan, étude de faisabilité, dossier bancable.",
     color: "text-warning",
   },
   {
     number: 5,
     icon: Handshake,
-    titleKey: "howItWorks.step5.title",
-    descriptionKey: "howItWorks.step5.description",
+    title: "Mise en relation investisseurs",
+    description: "Orientation vers bailleurs, banques et partenaires adaptés.",
     color: "text-secondary",
   },
 ];
@@ -73,10 +73,10 @@ export const HowItWorks = () => {
                 
                 <div className="space-y-2">
                   <h3 className="text-xl font-semibold text-foreground">
-                    {t(step.titleKey)}
+                    {step.title}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t(step.descriptionKey)}
+                    {step.description}
                   </p>
                 </div>
 

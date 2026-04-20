@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useFormProgress } from "@/hooks/useFormProgress";
 import { ArrowRight, ArrowLeft, Building2, CheckCircle, Upload, Send, Loader2, Save } from "lucide-react";
+import { trackLead } from "@/lib/leadTracking";
 
 interface EnterpriseFormData {
   companyName: string;
@@ -113,7 +114,7 @@ export const EnterpriseForm = () => {
     }
 
     try {
-      const { error } = await supabase.from("service_requests").insert({
+      const { data: req, error } = await supabase.from("service_requests").insert({
         user_id: user.id,
         service_type: 'enterprise',
         company_name: formData.companyName,
@@ -122,16 +123,28 @@ export const EnterpriseForm = () => {
         funding_needed: formData.fundingNeeded ? parseFloat(formData.fundingNeeded) : null,
         has_business_plan: formData.hasBusinessPlan,
         status: 'pending',
-      });
+      }).select().single();
 
       if (error) throw error;
+
+      await trackLead("service_request", {
+        first_name: user.email?.split("@")[0] || "Entreprise",
+        last_name: "—",
+        email: user.email || "",
+        user_id: user.id,
+        company_name: formData.companyName,
+        sector: formData.sector,
+        source_id: req?.id,
+        needs: formData.description,
+      });
 
       await complete(formData);
 
       toast({
-        title: "Demande envoyée",
-        description: "Votre demande d'accompagnement entreprise a été soumise avec succès.",
+        title: "Demande envoyée ✅",
+        description: "Étape suivante : évaluez votre projet avec MIPROJET+ pour connaître son niveau de financement.",
       });
+      navigate("/miprojet-plus");
     } catch (error: any) {
       toast({
         title: "Erreur",

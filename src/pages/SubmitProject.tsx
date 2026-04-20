@@ -343,10 +343,10 @@ const SubmitProject = () => {
         });
       } else {
         toast({
-          title: t('submitProject.success'),
-          description: t('submitProject.successDesc'),
+          title: "✅ Projet enregistré avec succès",
+          description: "Passez maintenant à l'étape suivante : évaluer votre projet avec MIPROJET+ pour connaître son niveau de financement.",
         });
-        navigate("/dashboard");
+        navigate(`/project-evaluation/${data.id}`);
       }
     } catch (error: any) {
       toast({

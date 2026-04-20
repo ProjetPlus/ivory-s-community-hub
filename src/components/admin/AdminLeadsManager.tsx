@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Trash2, Eye, Download, Loader2, Users, Mail, Phone } from "lucide-react";
 import { format } from "date-fns";
+import { LeadsSourceChart } from "./LeadsSourceChart";
 
 interface Lead {
   id: string;
@@ -83,6 +84,11 @@ export const AdminLeadsManager = () => {
       case "opportunity": return <Badge className="bg-primary/10 text-primary">Opportunité</Badge>;
       case "investor": return <Badge className="bg-success/10 text-success">Investisseur</Badge>;
       case "ebook": return <Badge className="bg-warning/10 text-warning">E-book</Badge>;
+      case "signup": return <Badge className="bg-info/10 text-info">Inscription</Badge>;
+      case "service_request": return <Badge className="bg-secondary/10 text-secondary">Demande service</Badge>;
+      case "referral": return <Badge className="bg-accent/10 text-accent-foreground">Parrainage</Badge>;
+      case "event": return <Badge variant="secondary">Événement</Badge>;
+      case "contact": return <Badge variant="outline">Contact</Badge>;
       default: return <Badge variant="outline">{source}</Badge>;
     }
   };
@@ -107,6 +113,9 @@ export const AdminLeadsManager = () => {
         </Button>
       </div>
 
+      {/* Source distribution chart */}
+      <LeadsSourceChart leads={leads} />
+
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -118,6 +127,11 @@ export const AdminLeadsManager = () => {
               <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Toutes les sources</SelectItem>
+                <SelectItem value="signup">Inscription</SelectItem>
+                <SelectItem value="service_request">Demande de service</SelectItem>
+                <SelectItem value="referral">Parrainage</SelectItem>
+                <SelectItem value="event">Événement</SelectItem>
+                <SelectItem value="contact">Contact</SelectItem>
                 <SelectItem value="opportunity">Opportunités</SelectItem>
                 <SelectItem value="investor">Investisseurs</SelectItem>
                 <SelectItem value="ebook">E-book</SelectItem>
