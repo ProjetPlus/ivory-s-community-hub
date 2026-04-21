@@ -93,7 +93,8 @@ const Journey = () => {
 
       doc.setFontSize(9);
       doc.setTextColor(120);
-      doc.text("Document généré par MIPROJET — ivoireprojet.com", pageWidth / 2, 290, { align: "center" });
+      doc.text("MIPROJET — ivoireprojet.com", pageWidth / 2, 285, { align: "center" });
+      doc.text("info@ivoireprojet.com  |  +225 07 07 16 79 21", pageWidth / 2, 290, { align: "center" });
 
       doc.save(`parcours-miprojet-${new Date().toISOString().slice(0, 10)}.pdf`);
       toast({ title: "PDF exporté", description: "Votre récap de parcours est prêt." });
