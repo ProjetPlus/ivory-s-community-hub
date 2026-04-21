@@ -24,6 +24,7 @@ interface NewsItem {
   views_count: number;
   created_at: string;
   is_featured: boolean;
+  short_slug?: string | null;
 }
 
 const News = () => {
@@ -207,6 +208,7 @@ const News = () => {
           description={selectedNews.excerpt || selectedNews.content.substring(0, 150)}
           imageUrl={selectedNews.image_url || undefined}
           shareType="news" shareId={selectedNews.id}
+          shortSlug={selectedNews.short_slug || undefined}
           cta="Lire l'article complet sur MIPROJET"
         />
         <Footer />
