@@ -13,18 +13,20 @@ interface SocialSharePopupProps {
   cta?: string;
   shareType?: "news" | "opportunity" | "project" | "document" | "ebook";
   shareId?: string;
+  shortSlug?: string;
 }
 
 const SITE_URL = "https://miprojet.agricapital.ci";
 const SUPABASE_FUNCTIONS_BASE = "https://nrrgqnruoylwztddkntm.supabase.co/functions/v1";
 
 function getShareUrl(props: SocialSharePopupProps): string {
-  const origin = typeof window !== "undefined" ? window.location.origin : SITE_URL;
-
-  if (props.shareType && props.shareId) {
-    return `${SUPABASE_FUNCTIONS_BASE}/og-image?type=${encodeURIComponent(props.shareType)}&id=${encodeURIComponent(props.shareId)}&origin=${encodeURIComponent(origin)}&target=${encodeURIComponent(props.url || origin)}`;
+  // Prefer the short slug → cleanest URL: /functions/v1/og-image?s=art003-04-026
+  if (props.shortSlug) {
+    return `${SUPABASE_FUNCTIONS_BASE}/og-image?s=${encodeURIComponent(props.shortSlug)}`;
   }
-
+  if (props.shareType && props.shareId) {
+    return `${SUPABASE_FUNCTIONS_BASE}/og-image?type=${encodeURIComponent(props.shareType)}&id=${encodeURIComponent(props.shareId)}`;
+  }
   return props.url || SITE_URL;
 }
 

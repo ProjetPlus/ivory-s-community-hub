@@ -18,6 +18,14 @@ const ctaByType: Record<string, string> = {
   ebook: "Télécharger le guide sur MIPROJET",
 };
 
+// Map a short slug prefix to (type, table, public path)
+const slugPrefixMap: Record<string, { type: string; table: string; path: string; selectFields: string }> = {
+  art: { type: "news", table: "news", path: "news", selectFields: "id, title, excerpt, content, image_url, short_slug" },
+  opp: { type: "opportunity", table: "opportunities", path: "opportunities", selectFields: "id, title, description, content, image_url, short_slug" },
+  prj: { type: "project", table: "projects", path: "projects", selectFields: "id, title, description, image_url, short_slug" },
+  doc: { type: "document", table: "platform_documents", path: "documents", selectFields: "id, title, description, cover_url, short_slug" },
+};
+
 const escapeHtml = (value: string) =>
   value
     .replaceAll("&", "&amp;")
@@ -78,9 +86,39 @@ Deno.serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const type = url.searchParams.get("type");
-    const id = url.searchParams.get("id");
+    let type = url.searchParams.get("type");
+    let id = url.searchParams.get("id");
     const format = url.searchParams.get("format");
+    let slugParam = url.searchParams.get("s") || url.searchParams.get("slug");
+
+    // Also support clean path: /functions/v1/og-image/s/art003-04-026
+    if (!slugParam) {
+      const pathParts = url.pathname.split("/").filter(Boolean);
+      const sIdx = pathParts.indexOf("s");
+      if (sIdx >= 0 && pathParts[sIdx + 1]) {
+        slugParam = pathParts.slice(sIdx + 1).join("-").replace(/\//g, "-");
+      }
+    }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Resolve a short slug -> type + id
+    if (slugParam) {
+      const normalized = slugParam.toLowerCase();
+      const prefix = normalized.slice(0, 3);
+      const cfg = slugPrefixMap[prefix];
+      if (cfg) {
+        const { data: row } = await supabase
+          .from(cfg.table)
+          .select(cfg.selectFields)
+          .eq("short_slug", normalized)
+          .maybeSingle();
+        if (row) {
+          type = cfg.type;
+          id = (row as any).id;
+        }
+      }
+    }
 
     if (!type || !id) {
       const badRequestHeaders = new Headers(corsHeaders);
@@ -90,8 +128,6 @@ Deno.serve(async (req) => {
         headers: badRequestHeaders,
       });
     }
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     let title = "MIPROJET";
     let description = "Plateforme Panafricaine de Structuration de Projets";

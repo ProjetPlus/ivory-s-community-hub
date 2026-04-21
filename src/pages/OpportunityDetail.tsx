@@ -339,6 +339,7 @@ const OpportunityDetail = () => {
           imageUrl={opportunity.image_url || undefined}
           shareType="opportunity"
           shareId={opportunity.id}
+          shortSlug={(opportunity as any).short_slug || undefined}
           cta="Découvrir cette opportunité sur MIPROJET"
         />
       )}

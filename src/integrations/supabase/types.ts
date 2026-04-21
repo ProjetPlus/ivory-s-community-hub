@@ -733,6 +733,7 @@ export type Database = {
           image_url: string | null
           is_featured: boolean | null
           published_at: string | null
+          short_slug: string | null
           status: string | null
           title: string
           updated_at: string
@@ -750,6 +751,7 @@ export type Database = {
           image_url?: string | null
           is_featured?: boolean | null
           published_at?: string | null
+          short_slug?: string | null
           status?: string | null
           title: string
           updated_at?: string
@@ -767,6 +769,7 @@ export type Database = {
           image_url?: string | null
           is_featured?: boolean | null
           published_at?: string | null
+          short_slug?: string | null
           status?: string | null
           title?: string
           updated_at?: string
@@ -834,6 +837,7 @@ export type Database = {
           location: string | null
           opportunity_type: string | null
           published_at: string | null
+          short_slug: string | null
           status: string | null
           title: string
           updated_at: string
@@ -861,6 +865,7 @@ export type Database = {
           location?: string | null
           opportunity_type?: string | null
           published_at?: string | null
+          short_slug?: string | null
           status?: string | null
           title: string
           updated_at?: string
@@ -888,6 +893,7 @@ export type Database = {
           location?: string | null
           opportunity_type?: string | null
           published_at?: string | null
+          short_slug?: string | null
           status?: string | null
           title?: string
           updated_at?: string
@@ -966,6 +972,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           requires_login: boolean | null
+          short_slug: string | null
           target_audience: string | null
           title: string
           updated_at: string
@@ -987,6 +994,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           requires_login?: boolean | null
+          short_slug?: string | null
           target_audience?: string | null
           title: string
           updated_at?: string
@@ -1008,6 +1016,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           requires_login?: boolean | null
+          short_slug?: string | null
           target_audience?: string | null
           title?: string
           updated_at?: string
@@ -1279,6 +1288,7 @@ export type Database = {
           owner_id: string
           risk_score: string | null
           sector: string | null
+          short_slug: string | null
           status: string | null
           title: string
           updated_at: string
@@ -1300,6 +1310,7 @@ export type Database = {
           owner_id: string
           risk_score?: string | null
           sector?: string | null
+          short_slug?: string | null
           status?: string | null
           title: string
           updated_at?: string
@@ -1321,6 +1332,7 @@ export type Database = {
           owner_id?: string
           risk_score?: string | null
           sector?: string | null
+          short_slug?: string | null
           status?: string | null
           title?: string
           updated_at?: string
@@ -1587,6 +1599,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      build_short_slug: {
+        Args: { _prefix: string; _rank: number; _ts: string }
+        Returns: string
+      }
       get_admin_payments: {
         Args: never
         Returns: {

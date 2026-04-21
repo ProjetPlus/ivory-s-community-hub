@@ -243,6 +243,7 @@ const Ebook = () => {
         imageUrl={window.location.origin + ebookCover}
         shareType={docRecord?.id ? "ebook" : undefined}
         shareId={docRecord?.id}
+        shortSlug={(docRecord as any)?.short_slug || undefined}
         cta="Télécharger le guide gratuit sur MIPROJET"
       />
     </div>
