@@ -66,7 +66,7 @@ interface PlatformSettings {
 const defaultSettings: PlatformSettings = {
   site_name: "MIPROJET",
   site_description: "Plateforme de structuration et d'accompagnement de projets en Afrique",
-  contact_email: "contact@miprojet.com",
+  contact_email: "info@ivoireprojet.com",
   contact_phone: "+225 07 07 16 79 21",
   address: "Abidjan, Côte d'Ivoire",
   timezone: "Africa/Abidjan",

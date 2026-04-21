@@ -107,7 +107,7 @@ const FAQ = () => {
     {
       id: "10",
       question: "Comment contacter l'équipe MIPROJET ?",
-      answer: "Vous pouvez nous contacter via le formulaire de contact sur notre site, par email à contact@miprojet.com, ou par téléphone. Notre équipe répond généralement sous 24h.",
+      answer: "Vous pouvez nous contacter via le formulaire de contact sur notre site, par email à info@ivoireprojet.com, ou par téléphone. Notre équipe répond généralement sous 24h.",
       category: "general",
       sort_order: 10
     },

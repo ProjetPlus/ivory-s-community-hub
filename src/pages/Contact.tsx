@@ -35,7 +35,7 @@ const Contact = () => {
   useEffect(() => {
     setMeta(
       "Contact | MIPROJET - Nous Contacter",
-      "Contactez MIPROJET pour vos projets. Adresse: Bingerville, Abidjan. Téléphone: +225 07 16 79 21. Email: infos@ivoireprojet.com"
+      "Contactez MIPROJET pour vos projets. Adresse: Bingerville, Abidjan. Téléphone: +225 07 07 16 79 21. Email: info@ivoireprojet.com"
     );
   }, []);
 
@@ -133,8 +133,8 @@ const Contact = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <a href="mailto:infos@ivoireprojet.com" className="block text-muted-foreground hover:text-primary transition-colors">
-                      infos@ivoireprojet.com
+                    <a href="mailto:info@ivoireprojet.com" className="block text-muted-foreground hover:text-primary transition-colors">
+                      info@ivoireprojet.com
                     </a>
                     <a href="mailto:miprojet.coop@gmail.com" className="block text-muted-foreground hover:text-primary transition-colors">
                       miprojet.coop@gmail.com

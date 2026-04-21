@@ -263,7 +263,7 @@ export const VirtualAssistant = () => {
               {/* WhatsApp + Input */}
               <div className="p-4 border-t border-border space-y-2">
                 <a
-                  href="https://wa.me/+2250716792121"
+                  href="https://wa.me/+2250707167921"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-lg bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-colors"

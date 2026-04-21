@@ -239,7 +239,7 @@ const SubscriptionCheckout = () => {
                 Paiements sécurisés par Wave
               </p>
               <p className="text-center text-xs text-muted-foreground mt-2">
-                En cas de difficulté, contactez-nous : <a href="https://wa.me/+2250716792121" className="text-primary hover:underline">WhatsApp : +225 07 16 79 21</a>
+                En cas de difficulté, contactez-nous : <a href="https://wa.me/+2250707167921" className="text-primary hover:underline">WhatsApp : +225 07 07 16 79 21</a>
               </p>
             </CardContent>
           </Card>

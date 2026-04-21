@@ -142,7 +142,7 @@ export const UniversalAIEditor = ({
       if (i === 0) html += `<p><strong>${p}</strong></p>`;
       else html += `<p>${p}</p>`;
     });
-    html += `<hr/><p><em>MIPROJET | infos@ivoireprojet.com | +225 07 16 79 21</em></p>`;
+    html += `<hr/><p><em>MIPROJET | info@ivoireprojet.com | +225 07 07 16 79 21</em></p>`;
     
     if (fields.find(f => f.name === 'title')) onChange('title', title);
     if (fields.find(f => f.name === 'excerpt')) onChange('excerpt', excerpt);

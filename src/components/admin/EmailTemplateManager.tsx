@@ -98,7 +98,7 @@ export const EmailTemplateManager = () => {
               <p style="text-align:center;"><a href="https://ivoireprojet.com/dashboard" class="btn">Accéder à mon espace</a></p>
             </div>
             <div class="footer">
-              <p><strong>MIPROJET</strong> | infos@ivoireprojet.com | +225 07 16 79 21</p>
+              <p><strong>MIPROJET</strong> | info@ivoireprojet.com | +225 07 07 16 79 21</p>
               <p>ivoireprojet.com</p>
             </div>
           </div>
@@ -120,7 +120,7 @@ export const EmailTemplateManager = () => {
               <p style="text-align:center;"><a href="https://ivoireprojet.com/opportunities" class="btn">Voir les opportunités</a></p>
             </div>
             <div class="footer">
-              <p><strong>MIPROJET</strong> | infos@ivoireprojet.com | +225 07 16 79 21</p>
+              <p><strong>MIPROJET</strong> | info@ivoireprojet.com | +225 07 07 16 79 21</p>
             </div>
           </div>
         </body></html>`
@@ -141,7 +141,7 @@ export const EmailTemplateManager = () => {
               <p style="text-align:center;"><a href="https://ivoireprojet.com/opportunities" class="btn">Voir l'opportunité</a></p>
             </div>
             <div class="footer">
-              <p><strong>MIPROJET</strong> | infos@ivoireprojet.com | +225 07 16 79 21</p>
+              <p><strong>MIPROJET</strong> | info@ivoireprojet.com | +225 07 07 16 79 21</p>
             </div>
           </div>
         </body></html>`
@@ -159,7 +159,7 @@ export const EmailTemplateManager = () => {
               <p style="color: #e53e3e; font-size: 13px;">⚠️ Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>
             </div>
             <div class="footer">
-              <p><strong>MIPROJET</strong> | infos@ivoireprojet.com | +225 07 16 79 21</p>
+              <p><strong>MIPROJET</strong> | info@ivoireprojet.com | +225 07 07 16 79 21</p>
             </div>
           </div>
         </body></html>`
@@ -179,7 +179,7 @@ export const EmailTemplateManager = () => {
               <p style="text-align:center;"><a href="https://ivoireprojet.com/subscription" class="btn">Renouveler mon abonnement</a></p>
             </div>
             <div class="footer">
-              <p><strong>MIPROJET</strong> | infos@ivoireprojet.com | +225 07 16 79 21</p>
+              <p><strong>MIPROJET</strong> | info@ivoireprojet.com | +225 07 07 16 79 21</p>
             </div>
           </div>
         </body></html>`
