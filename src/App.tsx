@@ -194,21 +194,27 @@ const App = () => (
             <Route path="/actualites" element={<News />} />
 
             {/* Short share links: /n/art003/04/026, /o/..., /p/..., /d/... */}
-            <Route path="/:type(n|o|p|d)/:a/:b/:c" element={
-              <Suspense fallback={<PageLoader />}>
-                <ShortLink />
-              </Suspense>
-            } />
-            <Route path="/:type(n|o|p|d)/:a/:b" element={
-              <Suspense fallback={<PageLoader />}>
-                <ShortLink />
-              </Suspense>
-            } />
-            <Route path="/:type(n|o|p|d)/:a" element={
-              <Suspense fallback={<PageLoader />}>
-                <ShortLink />
-              </Suspense>
-            } />
+            {(["n", "o", "p", "d"] as const).map((t) => (
+              <Route key={t} path={`/${t}/:a/:b/:c`} element={
+                <Suspense fallback={<PageLoader />}>
+                  <ShortLink />
+                </Suspense>
+              } />
+            ))}
+            {(["n", "o", "p", "d"] as const).map((t) => (
+              <Route key={`${t}-2`} path={`/${t}/:a/:b`} element={
+                <Suspense fallback={<PageLoader />}>
+                  <ShortLink />
+                </Suspense>
+              } />
+            ))}
+            {(["n", "o", "p", "d"] as const).map((t) => (
+              <Route key={`${t}-1`} path={`/${t}/:a`} element={
+                <Suspense fallback={<PageLoader />}>
+                  <ShortLink />
+                </Suspense>
+              } />
+            ))}
             
             {/* MiProjet+ */}
             <Route path="/miprojet-plus" element={
