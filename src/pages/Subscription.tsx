@@ -203,8 +203,8 @@ const Subscription = () => {
               En cas de difficulté avec Wave ou d'indisponibilité dans votre pays, merci de nous contacter pour une solution adaptée.
             </p>
             <p className="text-center text-sm font-medium mt-1">
-              <a href="https://wa.me/+2250716792121" target="_blank" rel="noopener" className="text-primary hover:underline">
-                WhatsApp : +225 07 16 79 21
+              <a href="https://wa.me/+2250707167921" target="_blank" rel="noopener" className="text-primary hover:underline">
+                WhatsApp : +225 07 07 16 79 21
               </a>
             </p>
           </CardContent>

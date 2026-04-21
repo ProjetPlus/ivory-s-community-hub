@@ -182,7 +182,7 @@ const IncubationProgram = () => {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                <Mail className="h-3 w-3" />contact@miprojet.com
+                <Mail className="h-3 w-3" />info@ivoireprojet.com
               </p>
             </CardContent>
           </Card>

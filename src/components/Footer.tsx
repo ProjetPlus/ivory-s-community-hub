@@ -27,7 +27,7 @@ export const Footer = () => {
                   <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.07A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/>
                 </svg>
               </a>
-              <a href="https://wa.me/2250716792121" target="_blank" rel="noopener" className="text-muted-foreground hover:text-primary transition-colors" aria-label="WhatsApp"><MessageCircle className="h-5 w-5" /></a>
+              <a href="https://wa.me/2250707167921" target="_blank" rel="noopener" className="text-muted-foreground hover:text-primary transition-colors" aria-label="WhatsApp"><MessageCircle className="h-5 w-5" /></a>
             </div>
           </div>
 
@@ -64,11 +64,11 @@ export const Footer = () => {
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Phone className="h-4 w-4 flex-shrink-0 text-primary" />
-                <a href="tel:+2250716792121" className="hover:text-primary transition-colors">+225 07 16 79 21</a>
+                <a href="tel:+2250707167921" className="hover:text-primary transition-colors">+225 07 07 16 79 21</a>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Mail className="h-4 w-4 flex-shrink-0 text-primary" />
-                <a href="mailto:infos@ivoireprojet.com" className="hover:text-primary transition-colors break-all">infos@ivoireprojet.com</a>
+                <a href="mailto:info@ivoireprojet.com" className="hover:text-primary transition-colors break-all">info@ivoireprojet.com</a>
               </li>
             </ul>
           </div>

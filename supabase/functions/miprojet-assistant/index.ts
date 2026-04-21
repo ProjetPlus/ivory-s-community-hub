@@ -25,8 +25,8 @@ SERVICES PROPOSÉS:
 
 CONTACT:
 - Site: ivoireprojet.com
-- Email: infos@ivoireprojet.com
-- Téléphone: +225 07 16 79 21
+- Email: info@ivoireprojet.com
+- Téléphone: +225 07 07 16 79 21
 - Adresse: Bingerville – Adjin Palmeraie, 25 BP 2454 Abidjan 25, Côte d'Ivoire
 
 RÈGLES:
@@ -149,8 +149,8 @@ Réponds UNIQUEMENT en JSON valide:
   "eligibility": "Critères d'éligibilité résumés",
   "location": "Zone géographique",
   "external_link": "",
-  "contact_email": "infos@ivoireprojet.com",
-  "contact_phone": "+225 07 16 79 21"
+  "contact_email": "info@ivoireprojet.com",
+  "contact_phone": "+225 07 07 16 79 21"
 }`
             },
             { role: "user", content: `Génère une fiche d'opportunité professionnelle complète à partir de : ${content}` }
@@ -180,12 +180,12 @@ Réponds UNIQUEMENT en JSON valide:
       return new Response(JSON.stringify({
         title: content.toUpperCase().substring(0, 80),
         description: `Opportunité de ${typeLabels[opportunityType]} - ${content}`,
-        content: `🚀 ${content.toUpperCase()}\n\nOpportunité disponible.\n\n📧 CONTACT\ninfos@ivoireprojet.com | +225 07 16 79 21\n\n#MIPROJET #Opportunité`,
+        content: `🚀 ${content.toUpperCase()}\n\nOpportunité disponible.\n\n📧 CONTACT\ninfo@ivoireprojet.com | +225 07 07 16 79 21\n\n#MIPROJET #Opportunité`,
         category: "general",
         eligibility: "Porteurs de projets en Afrique",
         location: "Afrique de l'Ouest",
-        contact_email: "infos@ivoireprojet.com",
-        contact_phone: "+225 07 16 79 21"
+        contact_email: "info@ivoireprojet.com",
+        contact_phone: "+225 07 07 16 79 21"
       }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -368,7 +368,7 @@ Le contenu DOIT être du HTML propre et bien structuré:
 
    <hr>
    <p><em>MIPROJET – Plateforme Panafricaine de Structuration de Projets</em></p>
-   <p><em>📧 infos@ivoireprojet.com | 📞 +225 07 16 79 21 | 🌐 ivoireprojet.com</em></p>
+   <p><em>📧 info@ivoireprojet.com | 📞 +225 07 07 16 79 21 | 🌐 ivoireprojet.com</em></p>
 
 4. INTERDICTIONS:
    - PAS de classes CSS ni de styles inline
@@ -441,7 +441,7 @@ Le message doit commencer par: "📢 [MIPROJET - Message automatique]"
 Suivi de: "⚠️ Ceci est un message automatique, merci de ne pas répondre."
 Puis le contenu personnalisé.
 Court (max 500 car), professionnel.
-Terminer par: "MIPROJET | ivoireprojet.com | +225 07 16 79 21"`
+Terminer par: "MIPROJET | ivoireprojet.com | +225 07 07 16 79 21"`
             },
             { role: "user", content: `Type: ${notification_type}\nContenu: ${message}` }
           ],
@@ -530,7 +530,7 @@ Terminer par: "MIPROJET | ivoireprojet.com | +225 07 16 79 21"`
               role: "system", 
               content: `Tu es le rédacteur d'emails pour MIPROJET.
 Génère des emails HTML professionnels avec design sobre, couleur #1a365d, bouton CTA vert #38a169.
-Footer: MIPROJET | infos@ivoireprojet.com | +225 07 16 79 21
+Footer: MIPROJET | info@ivoireprojet.com | +225 07 07 16 79 21
 Réponds en JSON: { "subject": "Objet", "html": "HTML complet" }`
             },
             { role: "user", content: templates[template_type] || `Génère un email professionnel: ${template_type}` }
