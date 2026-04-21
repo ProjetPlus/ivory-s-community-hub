@@ -95,6 +95,7 @@ export const SocialSharePopup = (props: SocialSharePopupProps) => {
   const { open, onClose, title, description, cta = "Découvrir sur MIPROJET" } = props;
   const { toast } = useToast();
   const shareUrl = getShareUrl(props);
+  const ogDebugUrl = getOgDebugUrl(props);
 
   const handleShare = (platform: typeof platforms[0]) => {
     window.open(platform.getUrl(shareUrl, title, description, cta), "_blank", "width=600,height=400");
@@ -107,7 +108,7 @@ export const SocialSharePopup = (props: SocialSharePopupProps) => {
   };
 
   const copyDebugLink = () => {
-    navigator.clipboard.writeText(shareUrl);
+    navigator.clipboard.writeText(ogDebugUrl);
     toast({ title: "Lien debug copié", description: "Le lien OG a été copié pour vérifier les meta tags." });
   };
 
@@ -143,7 +144,7 @@ export const SocialSharePopup = (props: SocialSharePopupProps) => {
                 <Bug className="h-4 w-4" />
                 Copier lien de debug OG
               </Button>
-              <Button variant="outline" className="gap-2" onClick={() => window.open(shareUrl, "_blank") }>
+              <Button variant="outline" className="gap-2" onClick={() => window.open(ogDebugUrl, "_blank") }>
                 <ExternalLink className="h-4 w-4" />
                 Ouvrir debug OG
               </Button>
