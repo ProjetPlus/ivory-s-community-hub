@@ -16,7 +16,6 @@ interface SocialSharePopupProps {
   shortSlug?: string;
 }
 
-const SITE_URL = "https://miprojet.agricapital.ci";
 const SUPABASE_FUNCTIONS_BASE = "https://nrrgqnruoylwztddkntm.supabase.co/functions/v1";
 const PUBLIC_SHORT_BASE = "https://ivoireprojet.com";
 
@@ -45,7 +44,7 @@ function getShareUrl(props: SocialSharePopupProps): string {
   if (props.shareType && props.shareId) {
     return `${SUPABASE_FUNCTIONS_BASE}/og-image?type=${encodeURIComponent(props.shareType)}&id=${encodeURIComponent(props.shareId)}`;
   }
-  return props.url || SITE_URL;
+  return props.url || PUBLIC_SHORT_BASE;
 }
 
 // For the debug button: always serve OG metadata via the edge function
@@ -56,7 +55,12 @@ function getOgDebugUrl(props: SocialSharePopupProps): string {
   if (props.shareType && props.shareId) {
     return `${SUPABASE_FUNCTIONS_BASE}/og-image?type=${encodeURIComponent(props.shareType)}&id=${encodeURIComponent(props.shareId)}`;
   }
-  return props.url || SITE_URL;
+  return props.url || PUBLIC_SHORT_BASE;
+}
+
+function buildShareText(shareUrl: string, title: string, desc: string, cta: string) {
+  const safeDesc = desc.trim().replace(/\s+/g, " ").slice(0, 180);
+  return `${shareUrl}\n\n${title}\n${safeDesc}\n\n👉 ${cta}`;
 }
 
 const platforms = [
@@ -69,7 +73,7 @@ const platforms = [
     name: "WhatsApp",
     icon: "💬",
     getUrl: (shareUrl: string, title: string, desc: string, cta: string) =>
-      `https://wa.me/?text=${encodeURIComponent(`*${title}*\n\n${desc}\n\n👉 ${cta}\n${shareUrl}\n\n— MIPROJET | Structuration • Financement • Incubation`)}`,
+      `https://wa.me/?text=${encodeURIComponent(buildShareText(shareUrl, title, desc, cta))}`,
   },
   {
     name: "LinkedIn",
@@ -102,7 +106,7 @@ export const SocialSharePopup = (props: SocialSharePopupProps) => {
   };
 
   const copyLink = () => {
-    const shareText = `${title}\n\n${description.substring(0, 150)}...\n\n👉 ${cta}\n${shareUrl}`;
+    const shareText = buildShareText(shareUrl, title, description, cta);
     navigator.clipboard.writeText(shareText);
     toast({ title: "Copié !", description: "Le texte de partage a été copié dans le presse-papiers." });
   };
