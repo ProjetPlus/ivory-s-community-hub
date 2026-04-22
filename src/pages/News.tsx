@@ -12,6 +12,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { formatDistanceToNow, format } from "date-fns";
 import { fr, enUS, ar, zhCN, es, de } from "date-fns/locale";
 import { SocialSharePopup } from "@/components/SocialSharePopup";
+import { ArticleLayout, RelatedItem } from "@/components/article/ArticleLayout";
+import { useToast } from "@/hooks/use-toast";
 
 interface NewsItem {
   id: string;
@@ -37,6 +39,7 @@ const News = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showShare, setShowShare] = useState(false);
+  const { toast } = useToast();
 
   const getLocale = () => {
     switch (language) {
@@ -136,69 +139,48 @@ const News = () => {
 
   // ===== ARTICLE DETAIL =====
   if (selectedNews) {
-    const imageUrl = selectedNews.image_url || defaultImages[0];
+    const wordCount = selectedNews.content.replace(/<[^>]*>/g, " ").split(/\s+/).filter(Boolean).length;
+    const readingMinutes = Math.max(1, Math.round(wordCount / 220));
+    const related: RelatedItem[] = news
+      .filter((n) => n.id !== selectedNews.id)
+      .slice(0, 3)
+      .map((n) => ({
+        id: n.id,
+        title: n.title,
+        image: n.image_url,
+        date: n.published_at,
+        views: n.views_count,
+        href: `/news/${n.id}`,
+      }));
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <Navigation />
         <main className="flex-1 pt-20">
-          {/* Hero */}
-          <div className="relative w-full h-[40vh] md:h-[55vh] overflow-hidden">
-            <img src={imageUrl} alt={selectedNews.title} className="w-full h-full object-cover"
-              onError={(e) => { (e.target as HTMLImageElement).src = defaultImages[0]; }} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12">
-              <div className="container mx-auto max-w-4xl">
-                <Badge className="bg-primary text-primary-foreground mb-4 text-sm px-3 py-1">
-                  {categories.find(c => c.value === selectedNews.category)?.label || selectedNews.category}
-                </Badge>
-                <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
-                  {selectedNews.title}
-                </h1>
-              </div>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="container mx-auto px-4 py-8 md:py-12">
-            <div className="max-w-4xl mx-auto">
-              {/* Meta bar */}
-              <div className="flex flex-wrap items-center gap-4 mb-8 pb-6 border-b border-border">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
-                  <Calendar className="h-4 w-4" />
-                  {selectedNews.published_at && format(new Date(selectedNews.published_at), 'PPP', { locale: getLocale() })}
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
-                  <Eye className="h-4 w-4" />
-                  {selectedNews.views_count} vues
-                </div>
-                <Button variant="ghost" size="sm" onClick={() => setShowShare(true)} className="ml-auto gap-2">
-                  <Share2 className="h-4 w-4" /> Partager
-                </Button>
-              </div>
-
-              {/* Excerpt */}
-              {selectedNews.excerpt && (
-                <blockquote className="text-lg md:text-xl text-muted-foreground italic mb-10 leading-relaxed border-l-4 border-primary pl-6 py-2 bg-primary/5 rounded-r-lg">
-                  {selectedNews.excerpt}
-                </blockquote>
-              )}
-
-              {/* Article body */}
-              <article className="mb-12">
-                {renderContent(selectedNews.content)}
-              </article>
-
-              {/* Footer actions */}
-              <div className="pt-6 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <Button variant="outline" onClick={() => navigate('/news')}>
-                  <ArrowLeft className="h-4 w-4 mr-2" />Retour aux actualités
-                </Button>
-                <Button variant="ghost" onClick={() => setShowShare(true)} className="gap-2">
-                  <Share2 className="h-4 w-4" /> Partager cet article
-                </Button>
-              </div>
-            </div>
-          </div>
+          <ArticleLayout
+            backHref="/news"
+            backLabel="Retour aux actualités"
+            topTag="Article"
+            category={categories.find((c) => c.value === selectedNews.category)?.label || selectedNews.category}
+            title={selectedNews.title}
+            subtitle={selectedNews.excerpt}
+            image={selectedNews.image_url}
+            imageAlt={selectedNews.title}
+            author="MIPROJET"
+            dateISO={selectedNews.published_at}
+            readingMinutes={readingMinutes}
+            viewsCount={selectedNews.views_count}
+            fullReads={Math.round((selectedNews.views_count || 0) * 0.6)}
+            sharesCount={0}
+            reactionsCount={0}
+            contentHtml={selectedNews.content}
+            onShare={() => setShowShare(true)}
+            relatedTitle="Articles similaires"
+            relatedItems={related}
+            relatedHref="/news"
+            onNewsletterSubmit={(email) =>
+              toast({ title: "Inscription enregistrée", description: `Merci, ${email} sera tenu informé.` })
+            }
+          />
         </main>
 
         <SocialSharePopup

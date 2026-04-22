@@ -14,6 +14,8 @@ import {
   ExternalLink, Loader2, Crown, Lock, Users, Clock, Share2
 } from "lucide-react";
 import { SocialSharePopup } from "@/components/SocialSharePopup";
+import { ArticleLayout, RelatedItem } from "@/components/article/ArticleLayout";
+import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -50,6 +52,8 @@ const OpportunityDetail = () => {
   const [showLeadForm, setShowLeadForm] = useState(false);
   const [hasAccess, setHasAccess] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [related, setRelated] = useState<any[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (opportunity) {
@@ -75,6 +79,19 @@ const OpportunityDetail = () => {
 
   useEffect(() => {
     if (id) fetchOpportunity();
+  }, [id]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("opportunities")
+        .select("id, title, image_url, published_at, views_count")
+        .eq("status", "published")
+        .neq("id", id || "")
+        .order("published_at", { ascending: false })
+        .limit(3);
+      if (data) setRelated(data);
+    })();
   }, [id]);
 
   const fetchOpportunity = async () => {
@@ -159,163 +176,104 @@ const OpportunityDetail = () => {
     );
   }
 
+  const subtitle = opportunity.description;
+  const relatedItems: RelatedItem[] = related.map((r) => ({
+    id: r.id,
+    title: r.title,
+    image: r.image_url,
+    date: r.published_at,
+    views: r.views_count,
+    href: `/opportunities/${r.id}`,
+  }));
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <main className="container mx-auto px-4 pt-24 pb-16">
-        <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" onClick={() => navigate('/opportunities')}>
-            <ArrowLeft className="h-4 w-4 mr-2" /> Retour aux opportunités
-          </Button>
-          <Button variant="ghost" onClick={() => setShowShare(true)} className="gap-2">
-            <Share2 className="h-4 w-4" /> Partager
-          </Button>
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {opportunity.image_url && (
-              <div className="relative h-64 md:h-80 overflow-hidden rounded-lg">
-                <img src={opportunity.image_url} alt={opportunity.title} className="w-full h-full object-cover" />
-                <div className="absolute top-4 right-4 flex gap-2">
-                  {opportunity.is_featured && <Badge className="bg-primary"><Crown className="h-3 w-3 mr-1" />À la une</Badge>}
-                  {isPremium ? (
-                    <Badge className="bg-amber-500 text-white">Premium</Badge>
-                  ) : (
-                    <Badge className="bg-success text-white">Gratuit</Badge>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <div>
-              <Badge variant="outline" className="mb-3">{opportunity.opportunity_type}</Badge>
-              <h1 className="text-3xl font-bold mb-4">{opportunity.title}</h1>
-              {opportunity.description && (
-                <p className="text-lg text-muted-foreground mb-6">{opportunity.description}</p>
+      <main className="pt-20">
+        <ArticleLayout
+          backHref="/opportunities"
+          backLabel="Retour aux opportunités"
+          topTag={isPremium ? "Opportunité Premium" : "Opportunité"}
+          category={opportunity.opportunity_type}
+          title={opportunity.title}
+          subtitle={subtitle}
+          image={opportunity.image_url}
+          imageAlt={opportunity.title}
+          author="MIPROJET"
+          dateISO={opportunity.published_at}
+          viewsCount={opportunity.views_count}
+          contentHtml={opportunity.content.replace(/\n/g, "<br/>")}
+          preContent={
+            <div className="grid sm:grid-cols-2 gap-3 mb-8">
+              {opportunity.deadline && (
+                <Card><CardContent className="p-4 flex items-center gap-3">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  <div><p className="text-xs text-muted-foreground">Date limite</p>
+                  <p className="font-medium">{format(new Date(opportunity.deadline), "d MMMM yyyy", { locale: fr })}</p></div>
+                </CardContent></Card>
+              )}
+              {opportunity.location && (
+                <Card><CardContent className="p-4 flex items-center gap-3">
+                  <MapPin className="h-5 w-5 text-primary" />
+                  <div><p className="text-xs text-muted-foreground">Localisation</p>
+                  <p className="font-medium">{opportunity.location}</p></div>
+                </CardContent></Card>
+              )}
+              {(opportunity.amount_min || opportunity.amount_max) && (
+                <Card><CardContent className="p-4 flex items-center gap-3">
+                  <Banknote className="h-5 w-5 text-primary" />
+                  <div><p className="text-xs text-muted-foreground">Montant</p>
+                  <p className="font-medium">
+                    {opportunity.amount_min && opportunity.amount_max
+                      ? `${opportunity.amount_min.toLocaleString()} - ${opportunity.amount_max.toLocaleString()} ${opportunity.currency}`
+                      : opportunity.amount_max
+                      ? `Jusqu'à ${opportunity.amount_max.toLocaleString()} ${opportunity.currency}`
+                      : `À partir de ${opportunity.amount_min?.toLocaleString()} ${opportunity.currency}`}
+                  </p></div>
+                </CardContent></Card>
               )}
             </div>
-
-            <Card>
-              <CardContent className="p-6 prose prose-neutral dark:prose-invert max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: opportunity.content.replace(/\n/g, '<br/>') }} />
-              </CardContent>
-            </Card>
-
-            {opportunity.eligibility && (
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="font-semibold mb-3 flex items-center gap-2">
-                    <Users className="h-5 w-5" /> Critères d'éligibilité
-                  </h3>
+          }
+          postContent={
+            <>
+              {opportunity.eligibility && (
+                <Card className="my-8"><CardContent className="p-6">
+                  <h3 className="font-semibold mb-3 flex items-center gap-2"><Users className="h-5 w-5" /> Critères d'éligibilité</h3>
                   <p className="text-muted-foreground whitespace-pre-line">{opportunity.eligibility}</p>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Strategic Info - Gated */}
-            {!canSeeStrategicInfo && !isPremium && (
-              <Card className="border-dashed border-2 border-primary/30 bg-primary/5">
-                <CardContent className="p-8 text-center">
-                  <Lock className="h-10 w-10 text-primary mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Informations stratégiques</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Pour accéder au lien de candidature et aux informations stratégiques de l'émetteur,
-                    veuillez remplir le formulaire ci-dessous.
-                  </p>
-                  <Button onClick={() => setShowLeadForm(true)} size="lg">
-                    Voir les informations pour postuler
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <Card>
-              <CardContent className="p-6 space-y-4">
-                <h3 className="font-semibold">Informations clés</h3>
-                
-                {opportunity.deadline && (
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Date limite</p>
-                      <p className="font-medium">{format(new Date(opportunity.deadline), 'dd MMMM yyyy', { locale: fr })}</p>
-                    </div>
-                  </div>
-                )}
-
-                {opportunity.location && (
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Localisation</p>
-                      <p className="font-medium">{opportunity.location}</p>
-                    </div>
-                  </div>
-                )}
-
-                {(opportunity.amount_min || opportunity.amount_max) && (
-                  <div className="flex items-center gap-3">
-                    <Banknote className="h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Montant</p>
-                      <p className="font-medium">
-                        {opportunity.amount_min && opportunity.amount_max 
-                          ? `${opportunity.amount_min.toLocaleString()} - ${opportunity.amount_max.toLocaleString()} ${opportunity.currency}`
-                          : opportunity.amount_max 
-                            ? `Jusqu'à ${opportunity.amount_max.toLocaleString()} ${opportunity.currency}`
-                            : `À partir de ${opportunity.amount_min?.toLocaleString()} ${opportunity.currency}`
-                        }
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex items-center gap-3">
-                  <Clock className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Vues</p>
-                    <p className="font-medium">{opportunity.views_count} consultations</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Contact & Strategic - only if access granted */}
-            {canSeeStrategicInfo && (opportunity.contact_email || opportunity.contact_phone || opportunity.external_link) && (
-              <Card>
-                <CardContent className="p-6 space-y-4">
+                </CardContent></Card>
+              )}
+              {!canSeeStrategicInfo && !isPremium && (
+                <Card className="my-8 border-dashed border-2 border-primary/30 bg-primary/5">
+                  <CardContent className="p-8 text-center">
+                    <Lock className="h-10 w-10 text-primary mx-auto mb-4" />
+                    <h3 className="text-xl font-bold mb-2">Informations stratégiques</h3>
+                    <p className="text-muted-foreground mb-6">Pour accéder au lien de candidature, remplissez le formulaire.</p>
+                    <Button onClick={() => setShowLeadForm(true)} size="lg">Voir les informations pour postuler</Button>
+                  </CardContent>
+                </Card>
+              )}
+              {canSeeStrategicInfo && (opportunity.contact_email || opportunity.contact_phone || opportunity.external_link) && (
+                <Card className="my-8"><CardContent className="p-6 space-y-3">
                   <h3 className="font-semibold">Contact & Candidature</h3>
-                  
                   {opportunity.contact_email && (
-                    <a href={`mailto:${opportunity.contact_email}`} className="flex items-center gap-3 text-primary hover:underline">
-                      <Mail className="h-5 w-5" /> {opportunity.contact_email}
-                    </a>
+                    <a href={`mailto:${opportunity.contact_email}`} className="flex items-center gap-3 text-primary hover:underline"><Mail className="h-5 w-5" /> {opportunity.contact_email}</a>
                   )}
-
                   {opportunity.contact_phone && (
-                    <a href={`tel:${opportunity.contact_phone}`} className="flex items-center gap-3 text-primary hover:underline">
-                      <Phone className="h-5 w-5" /> {opportunity.contact_phone}
-                    </a>
+                    <a href={`tel:${opportunity.contact_phone}`} className="flex items-center gap-3 text-primary hover:underline"><Phone className="h-5 w-5" /> {opportunity.contact_phone}</a>
                   )}
-
                   {opportunity.external_link && (
-                    <Button asChild className="w-full">
-                      <a href={opportunity.external_link} target="_blank" rel="noopener noreferrer">
-                        Postuler / En savoir plus
-                        <ExternalLink className="h-4 w-4 ml-2" />
-                      </a>
-                    </Button>
+                    <Button asChild className="w-full"><a href={opportunity.external_link} target="_blank" rel="noopener noreferrer">Postuler / En savoir plus<ExternalLink className="h-4 w-4 ml-2" /></a></Button>
                   )}
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </div>
+                </CardContent></Card>
+              )}
+            </>
+          }
+          onShare={() => setShowShare(true)}
+          relatedTitle="Opportunités similaires"
+          relatedItems={relatedItems}
+          relatedHref="/opportunities"
+          onNewsletterSubmit={(email) => toast({ title: "Inscription enregistrée", description: `Merci, ${email} sera tenu informé.` })}
+        />
       </main>
       <Footer />
 
