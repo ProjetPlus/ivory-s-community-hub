@@ -7,7 +7,7 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const SITE_URL = Deno.env.get("PUBLIC_SITE_URL") || "https://miprojet.agricapital.ci";
+const SITE_URL = Deno.env.get("PUBLIC_SITE_URL") || "https://ivoireprojet.com";
 const DEFAULT_IMAGE = `${SITE_URL}/miprojet-og-cover.png`;
 
 const ctaByType: Record<string, string> = {
@@ -38,6 +38,29 @@ const toAbsoluteUrl = (value: string, fallbackBase: string) => {
   if (!value) return value;
   if (value.startsWith("http://") || value.startsWith("https://")) return value;
   return `${fallbackBase}${value.startsWith("/") ? "" : "/"}${value}`;
+};
+
+const stripHtml = (value: string | null | undefined) =>
+  (value || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&#39;/gi, "'")
+    .replace(/&quot;/gi, '"')
+    .replace(/\s+/g, " ")
+    .trim();
+
+const buildShortPublicUrl = (type: string, shortSlug?: string | null, fallbackId?: string | null) => {
+  const shortMap: Record<string, string> = { news: "n", opportunity: "o", project: "p", document: "d", ebook: "d" };
+  if (shortSlug && shortMap[type]) {
+    return `${SITE_URL}/${shortMap[type]}/${shortSlug.replace(/-/g, "/")}`;
+  }
+  if (!fallbackId) return SITE_URL;
+  if (type === "news") return `${SITE_URL}/news/${fallbackId}`;
+  if (type === "opportunity") return `${SITE_URL}/opportunities/${fallbackId}`;
+  if (type === "project") return `${SITE_URL}/projects/${fallbackId}`;
+  if (type === "document" || type === "ebook") return `${SITE_URL}/documents/${fallbackId}`;
+  return SITE_URL;
 };
 
 const buildHtml = ({
@@ -147,36 +170,36 @@ Deno.serve(async (req) => {
     let pageUrl = SITE_URL;
 
     if (type === "news") {
-      const { data } = await supabase.from("news").select("title, excerpt, content, image_url").eq("id", id).single();
+      const { data } = await supabase.from("news").select("title, excerpt, content, image_url, short_slug").eq("id", id).single();
       if (data) {
         title = data.title;
-        description = data.excerpt || data.content?.substring(0, 160) || description;
+        description = stripHtml(data.excerpt) || stripHtml(data.content).substring(0, 220) || description;
         image = data.image_url || DEFAULT_IMAGE;
-        pageUrl = `${SITE_URL}/news/${id}`;
+        pageUrl = buildShortPublicUrl(type, data.short_slug, id);
       }
     } else if (type === "opportunity") {
-      const { data } = await supabase.from("opportunities").select("title, description, content, image_url").eq("id", id).single();
+      const { data } = await supabase.from("opportunities").select("title, description, content, image_url, short_slug").eq("id", id).single();
       if (data) {
         title = data.title;
-        description = data.description || data.content?.substring(0, 160) || description;
+        description = stripHtml(data.description) || stripHtml(data.content).substring(0, 220) || description;
         image = data.image_url || DEFAULT_IMAGE;
-        pageUrl = `${SITE_URL}/opportunities/${id}`;
+        pageUrl = buildShortPublicUrl(type, data.short_slug, id);
       }
     } else if (type === "project") {
-      const { data } = await supabase.from("projects").select("title, description, image_url").eq("id", id).single();
+      const { data } = await supabase.from("projects").select("title, description, image_url, short_slug").eq("id", id).single();
       if (data) {
         title = data.title;
-        description = data.description?.substring(0, 160) || description;
+        description = stripHtml(data.description).substring(0, 220) || description;
         image = data.image_url || DEFAULT_IMAGE;
-        pageUrl = `${SITE_URL}/projects/${id}`;
+        pageUrl = buildShortPublicUrl(type, data.short_slug, id);
       }
     } else if (type === "document" || type === "ebook") {
-      const { data } = await supabase.from("platform_documents").select("title, description, cover_url").eq("id", id).single();
+      const { data } = await supabase.from("platform_documents").select("title, description, cover_url, short_slug").eq("id", id).single();
       if (data) {
         title = data.title;
-        description = data.description?.substring(0, 160) || description;
+        description = stripHtml(data.description).substring(0, 220) || description;
         image = data.cover_url || DEFAULT_IMAGE;
-        pageUrl = `${SITE_URL}/documents/${id}`;
+        pageUrl = buildShortPublicUrl(type, data.short_slug, id);
       }
     }
 
