@@ -298,6 +298,7 @@ export const AdminOpportunitiesManager = () => {
                     onChange={handleFieldChange}
                     contentFieldName="content"
                     storageFolder="news-media"
+                    shareKind="opportunity"
                   />
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
