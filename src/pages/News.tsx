@@ -41,6 +41,7 @@ const News = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showShare, setShowShare] = useState(false);
   const { toast } = useToast();
+  const newsletter = useNewsletterSubscribe("news");
 
   const getLocale = () => {
     switch (language) {

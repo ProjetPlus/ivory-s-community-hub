@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { SocialSharePopup } from "@/components/SocialSharePopup";
 import { ArticleLayout, RelatedItem } from "@/components/article/ArticleLayout";
+import { useNewsletterSubscribe } from "@/hooks/useNewsletterSubscribe";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
