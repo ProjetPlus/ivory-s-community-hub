@@ -127,11 +127,11 @@ Deno.serve(async (req) => {
     if (!slugParam) {
       const pathParts = url.pathname.split("/").filter(Boolean);
       const shortMap: Record<string, string> = { n: "art", o: "opp", p: "prj", d: "doc" };
-      const first = pathParts[0];
-      if (first && shortMap[first] && pathParts.length >= 2) {
-        // Take all remaining segments and join with '-' to form the slug
-        const remaining = pathParts.slice(1).join("-");
-        slugParam = remaining;
+      // Find the first segment that matches a short prefix (n/o/p/d).
+      // The function may be mounted at /functions/v1/og-image/n/<slug>... or at /og-image/n/<slug>...
+      const shortIdx = pathParts.findIndex((p) => shortMap[p]);
+      if (shortIdx >= 0 && pathParts.length > shortIdx + 1) {
+        slugParam = pathParts.slice(shortIdx + 1).join("-");
       }
     }
 
