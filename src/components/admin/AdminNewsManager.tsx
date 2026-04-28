@@ -42,6 +42,7 @@ const categories = [
 
 const editorFields: EditorField[] = [
   { name: 'title', label: 'Titre', type: 'text', placeholder: 'Sera généré par l\'IA...', required: true },
+  { name: 'author_name', label: 'Auteur (nom affiché)', type: 'text', placeholder: 'Ex: Rédaction MIPROJET' },
   { name: 'category', label: 'Catégorie', type: 'select', options: categories },
   { name: 'image_url', label: 'Image', type: 'upload-image', maxSize: 20 },
   { name: 'video_url', label: 'Vidéo', type: 'upload-video', maxSize: 500 },
@@ -60,7 +61,7 @@ export const AdminNewsManager = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   
   const [formData, setFormData] = useState<Record<string, any>>({
-    title: "", content: "", excerpt: "", image_url: "", video_url: "", category: "general", is_featured: false,
+    title: "", content: "", excerpt: "", image_url: "", video_url: "", category: "general", is_featured: false, author_name: "",
   });
 
   useEffect(() => { fetchNews(); }, [filterStatus]);
@@ -90,6 +91,7 @@ export const AdminNewsManager = () => {
       category: formData.category || 'general',
       is_featured: formData.is_featured || false,
       author_id: user.id,
+      author_name: formData.author_name?.trim() || null,
     };
 
     if (editingNews) {
@@ -118,7 +120,7 @@ export const AdminNewsManager = () => {
   };
 
   const resetForm = () => {
-    setFormData({ title: "", content: "", excerpt: "", image_url: "", video_url: "", category: "general", is_featured: false });
+    setFormData({ title: "", content: "", excerpt: "", image_url: "", video_url: "", category: "general", is_featured: false, author_name: "" });
     setEditingNews(null);
     setIsDialogOpen(false);
   };
@@ -129,6 +131,7 @@ export const AdminNewsManager = () => {
       title: item.title, content: item.content, excerpt: item.excerpt || "",
       image_url: item.image_url || "", video_url: item.video_url || "",
       category: item.category, is_featured: item.is_featured,
+      author_name: (item as any).author_name || "",
     });
     setIsDialogOpen(true);
   };
