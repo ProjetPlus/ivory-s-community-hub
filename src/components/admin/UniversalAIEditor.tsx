@@ -10,14 +10,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
   Wand2, Loader2, Bold, Italic, List, ListOrdered, Heading1, Heading2,
-  Quote, Image, Video, Upload, Sparkles, ImagePlus, FileText, Film, Images, Eye
+  Quote, Image, Video, Upload, Sparkles, ImagePlus, FileText, Film, Images, Eye,
+  Paperclip, X
 } from "lucide-react";
 import { SocialPreview } from "./SocialPreview";
 
 export interface EditorField {
   name: string;
   label: string;
-  type: 'text' | 'textarea' | 'select' | 'upload-image' | 'upload-video' | 'tags';
+  type: 'text' | 'textarea' | 'select' | 'upload-image' | 'upload-video' | 'upload-media' | 'upload-document' | 'tags';
   options?: { value: string; label: string }[];
   placeholder?: string;
   required?: boolean;
@@ -33,7 +34,7 @@ interface UniversalAIEditorProps {
   storageFolder?: string;
 }
 
-type GenerationOption = 'text_only' | 'with_cover' | 'with_cover_and_illustrations';
+type GenerationOption = 'text_only' | 'with_images';
 
 export const UniversalAIEditor = ({
   fields, values, onChange, contentFieldName = 'content', storageFolder = 'news-media'
@@ -47,9 +48,8 @@ export const UniversalAIEditor = ({
   const editorRef = useRef<HTMLDivElement>(null);
 
   const generationOptions: { value: GenerationOption; label: string; icon: React.ReactNode; description: string }[] = [
-    { value: 'text_only', label: 'Sans image', icon: <FileText className="h-8 w-8" />, description: 'Génération textuelle pure, sans visuel' },
-    { value: 'with_cover', label: 'Avec image de couverture', icon: <ImagePlus className="h-8 w-8" />, description: 'L\'IA génère une image ultra-réaliste de couverture' },
-    { value: 'with_cover_and_illustrations', label: 'Couverture + illustrations', icon: <Images className="h-8 w-8" />, description: 'Image de couverture + illustrations dans le contenu' },
+    { value: 'with_images', label: 'Génération avec images', icon: <ImagePlus className="h-8 w-8" />, description: 'Image de couverture ultra-réaliste + illustrations contextuelles si pertinentes' },
+    { value: 'text_only', label: 'Génération sans images', icon: <FileText className="h-8 w-8" />, description: 'Contenu textuel uniquement, structuré et professionnel' },
   ];
 
   const handleGenerateClick = () => {
@@ -96,7 +96,7 @@ export const UniversalAIEditor = ({
     }
 
     // Generate cover image if requested
-    if (option === 'with_cover' || option === 'with_cover_and_illustrations') {
+    if (option === 'with_images') {
       await generateAIImage(content);
     }
   };
