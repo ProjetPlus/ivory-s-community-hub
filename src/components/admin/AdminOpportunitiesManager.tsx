@@ -79,6 +79,7 @@ const eligibleBeneficiaries = [
 
 const editorFields: EditorField[] = [
   { name: 'title', label: 'Titre de l\'appel', type: 'text', placeholder: 'Ex: Appel à projets PME innovantes 2026', required: true },
+  { name: 'author_name', label: 'Auteur (nom affiché)', type: 'text', placeholder: 'Ex: Rédaction MIPROJET' },
   { name: 'image_url', label: 'Image', type: 'upload-image', maxSize: 20 },
 ];
 
@@ -108,7 +109,7 @@ export const AdminOpportunitiesManager = () => {
     send_to_premium: false, publish_member_space: true, scheduled_date: "",
     // Contact
     contact_email: "info@ivoireprojet.com", contact_phone: "+225 07 07 16 79 21",
-    is_featured: false, is_premium: false,
+    is_featured: false, is_premium: false, author_name: "",
   });
 
   useEffect(() => { fetchOpportunities(); }, [filterType, filterStatus]);
@@ -182,6 +183,7 @@ export const AdminOpportunitiesManager = () => {
       is_featured: formData.is_featured || false,
       is_premium: formData.is_premium || false,
       author_id: user.id,
+      author_name: formData.author_name?.trim() || null,
       ...(publishDirectly ? { status: 'published', published_at: new Date().toISOString() } : {}),
     };
 
