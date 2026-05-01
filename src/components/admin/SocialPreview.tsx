@@ -1,5 +1,6 @@
-import { Link2, ExternalLink, Globe } from "lucide-react";
+import { Link2, ExternalLink, Globe, TestTube2 } from "lucide-react";
 import { resolveCover } from "@/lib/coverImage";
+import { Button } from "@/components/ui/button";
 
 interface SocialPreviewProps {
   title: string;
@@ -33,11 +34,28 @@ export const SocialPreview = ({
     try { return new URL(link).hostname.replace(/^www\./, ""); } catch { return "ivoireprojet.com"; }
   })();
 
+  const encoded = encodeURIComponent(link);
+  const testers: { label: string; href: string }[] = [
+    { label: "Facebook Debugger", href: `https://developers.facebook.com/tools/debug/?q=${encoded}` },
+    { label: "LinkedIn Inspector", href: `https://www.linkedin.com/post-inspector/inspect/${encoded}` },
+    { label: "X / Twitter", href: `https://cards-dev.twitter.com/validator?url=${encoded}` },
+    { label: "WhatsApp", href: `https://api.whatsapp.com/send?text=${encoded}` },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="text-xs text-muted-foreground flex items-center gap-2">
         <Globe className="h-3 w-3" />
         Aperçu Open Graph — rendu réel sur WhatsApp, Facebook, LinkedIn, X, Telegram
+      </div>
+
+      <div className="flex flex-wrap gap-2 border rounded-lg p-3 bg-muted/20">
+        <span className="text-xs font-semibold flex items-center gap-1 mr-2"><TestTube2 className="h-3.5 w-3.5" /> Tester avant publication :</span>
+        {testers.map((t) => (
+          <Button key={t.label} type="button" size="sm" variant="outline" asChild>
+            <a href={t.href} target="_blank" rel="noopener noreferrer">{t.label}</a>
+          </Button>
+        ))}
       </div>
 
       {/* Facebook / LinkedIn style card */}
