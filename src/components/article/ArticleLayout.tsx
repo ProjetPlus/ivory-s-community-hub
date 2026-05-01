@@ -127,8 +127,8 @@ export const ArticleLayout = ({
         </Badge>
       )}
 
-      {/* Title */}
-      <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-foreground mb-4">
+      {/* Title — left accent bar in MIPROJET primary color */}
+      <h1 className="relative pl-4 md:pl-5 border-l-4 border-primary text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-foreground mb-4">
         {title}
       </h1>
 
@@ -181,8 +181,9 @@ export const ArticleLayout = ({
         className="prose prose-lg max-w-none text-foreground/90
           prose-headings:font-bold prose-headings:text-foreground
           prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-10 prose-h2:mb-4
-          prose-h2:pl-4 prose-h2:border-l-4 prose-h2:border-accent
+          prose-h2:pl-4 prose-h2:border-l-4 prose-h2:border-primary
           prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
+          prose-h3:pl-3 prose-h3:border-l-2 prose-h3:border-primary/60
           prose-p:leading-relaxed prose-p:mb-5
           prose-strong:text-foreground
           prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline
