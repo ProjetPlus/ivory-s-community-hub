@@ -268,3 +268,181 @@ html {
 *:focus-visible {
   @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
 }
+
+/* =========================================================
+   Article body — Word-like professional typography
+   Scoped to .article-body so it never affects the rest of the site.
+   ========================================================= */
+.article-body {
+  font-size: 1.0625rem;
+  line-height: 1.85;
+  color: hsl(var(--foreground) / 0.92);
+}
+
+/* Drop cap on the very first paragraph (magazine feel) */
+.article-body > p:first-of-type::first-letter {
+  float: left;
+  font-size: 3.4rem;
+  line-height: 1;
+  font-weight: 800;
+  color: hsl(var(--primary));
+  padding: 0.25rem 0.75rem 0 0;
+  margin-top: 0.25rem;
+  font-family: 'Source Sans 3', serif;
+}
+
+/* Section dividers — subtle horizontal lines auto-inserted between H2 sections */
+.article-body h2 + p,
+.article-body h3 + p {
+  margin-top: 0.5rem;
+}
+
+.article-body h2 {
+  position: relative;
+  scroll-margin-top: 6rem;
+}
+
+.article-body h2::after {
+  content: "";
+  display: block;
+  width: 3rem;
+  height: 3px;
+  background: hsl(var(--primary));
+  border-radius: 2px;
+  margin-top: 0.6rem;
+}
+
+/* Tables — clean Word-style with header band, zebra rows, soft borders */
+.article-body .table-wrapper,
+.article-body figure.table {
+  overflow-x: auto;
+  margin: 2rem 0;
+  border-radius: 0.75rem;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 3px hsl(var(--foreground) / 0.04);
+}
+
+.article-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-size: 0.95rem;
+  background: hsl(var(--card));
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  display: block;
+  overflow-x: auto;
+  white-space: normal;
+}
+
+.article-body table thead {
+  background: hsl(var(--primary));
+}
+
+.article-body table thead th {
+  color: hsl(var(--primary-foreground));
+  font-weight: 600;
+  text-align: left;
+  padding: 0.85rem 1rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border: none;
+}
+
+.article-body table tbody td {
+  padding: 0.85rem 1rem;
+  border-top: 1px solid hsl(var(--border));
+  vertical-align: top;
+}
+
+.article-body table tbody tr:nth-child(even) {
+  background: hsl(var(--muted) / 0.4);
+}
+
+.article-body table tbody tr:hover {
+  background: hsl(var(--primary) / 0.05);
+}
+
+/* Lists — better hierarchy and spacing */
+.article-body ul,
+.article-body ol {
+  padding-left: 1.5rem;
+  margin: 1.25rem 0;
+}
+
+.article-body li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.25rem;
+}
+
+.article-body li::marker {
+  color: hsl(var(--primary));
+  font-weight: 600;
+}
+
+/* Blockquote — pull-quote style */
+.article-body blockquote {
+  position: relative;
+  font-size: 1.05rem;
+  margin: 2rem 0;
+}
+
+.article-body blockquote p {
+  margin: 0;
+}
+
+/* Inline images keep proportions and round nicely */
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 16px hsl(var(--foreground) / 0.08);
+  margin: 2rem auto;
+  display: block;
+}
+
+/* Captions if author wraps an image inside <figure><figcaption> */
+.article-body figcaption {
+  text-align: center;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Horizontal rule — elegant divider */
+.article-body hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--border)) 20%, hsl(var(--border)) 80%, transparent);
+  margin: 2.5rem 0;
+}
+
+/* Code blocks */
+.article-body pre {
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* Mobile fine-tuning */
+@media (max-width: 640px) {
+  .article-body {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+  .article-body > p:first-of-type::first-letter {
+    font-size: 2.6rem;
+  }
+  .article-body h2 {
+    font-size: 1.4rem !important;
+  }
+  .article-body h3 {
+    font-size: 1.15rem !important;
+  }
+  .article-body p {
+    text-align: left; /* avoid ugly justification gaps on small screens */
+  }
+}
