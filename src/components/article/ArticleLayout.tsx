@@ -127,8 +127,8 @@ export const ArticleLayout = ({
         </Badge>
       )}
 
-      {/* Title — left accent bar in MIPROJET primary color */}
-      <h1 className="relative pl-4 md:pl-5 border-l-4 border-primary text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-foreground mb-4">
+      {/* Title — clean, no accent bar (the bar lives in the body sections) */}
+      <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-foreground mb-4">
         {title}
       </h1>
 
@@ -176,21 +176,29 @@ export const ArticleLayout = ({
 
       {preContent}
 
-      {/* Article body — H2 with vertical accent bar */}
+      {/* Article body — Word-like professional typography */}
       <div
-        className="prose prose-lg max-w-none text-foreground/90
-          prose-headings:font-bold prose-headings:text-foreground
-          prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-10 prose-h2:mb-4
-          prose-h2:pl-4 prose-h2:border-l-4 prose-h2:border-primary
-          prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-          prose-h3:pl-3 prose-h3:border-l-2 prose-h3:border-primary/60
-          prose-p:leading-relaxed prose-p:mb-5
-          prose-strong:text-foreground
-          prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline
-          prose-blockquote:border-l-primary prose-blockquote:bg-primary/5 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg
-          prose-img:rounded-xl prose-img:shadow-md prose-img:my-6
-          prose-ul:list-disc prose-ul:pl-6 prose-li:mb-1
-          prose-hr:my-8"
+        className="article-body prose prose-lg max-w-none text-foreground/90
+          prose-headings:font-bold prose-headings:text-foreground prose-headings:tracking-tight
+          prose-h2:text-2xl md:prose-h2:text-[1.75rem] prose-h2:leading-snug
+          prose-h2:mt-12 prose-h2:mb-5 prose-h2:pl-4 prose-h2:border-l-4 prose-h2:border-primary
+          prose-h3:text-xl prose-h3:mt-9 prose-h3:mb-3 prose-h3:text-primary
+          prose-h4:text-lg prose-h4:mt-7 prose-h4:mb-2 prose-h4:text-foreground
+          prose-p:leading-[1.85] prose-p:mb-5 prose-p:text-justify
+          prose-strong:text-foreground prose-strong:font-semibold
+          prose-em:text-foreground/90
+          prose-a:text-primary prose-a:font-medium prose-a:underline prose-a:underline-offset-4 prose-a:decoration-primary/40 hover:prose-a:decoration-primary
+          prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5
+          prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg
+          prose-blockquote:not-italic prose-blockquote:font-medium prose-blockquote:text-foreground/90
+          prose-img:rounded-xl prose-img:shadow-md prose-img:my-8 prose-img:mx-auto
+          prose-figure:my-8 prose-figcaption:text-center prose-figcaption:text-sm prose-figcaption:text-muted-foreground prose-figcaption:mt-2
+          prose-ul:my-5 prose-ul:pl-6 prose-ul:list-disc prose-ul:marker:text-primary
+          prose-ol:my-5 prose-ol:pl-6 prose-ol:marker:text-primary prose-ol:marker:font-semibold
+          prose-li:mb-2 prose-li:leading-relaxed prose-li:pl-1
+          prose-hr:my-10 prose-hr:border-border
+          prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-[0.9em] prose-code:before:content-none prose-code:after:content-none
+          prose-pre:bg-muted prose-pre:text-foreground prose-pre:rounded-lg prose-pre:p-4 prose-pre:border prose-pre:border-border"
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
 
