@@ -1,0 +1,111 @@
+// Vercel serverless function — handles short links /n /o /p /d
+// Detects social crawlers via User-Agent and serves prerendered OG HTML.
+// Real users get the SPA (index.html) via 302 to the same path with ?spa=1 sentinel,
+// or directly the SPA fallback served by Vercel.
+
+const SUPABASE_URL = "https://nrrgqnruoylwztddkntm.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ycmdxbnJ1b3lsd3p0ZGRrbnRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNTYxOTYsImV4cCI6MjA4NjczMjE5Nn0.p2bFufIgC7dcHIWTBBGdhkEbS9XXxiEdIY2kymE0dZ0";
+const SITE_URL = "https://ivoireprojet.com";
+const DEFAULT_IMAGE = `${SITE_URL}/miprojet-og-cover.png`;
+
+const BOT_REGEX = /facebookexternalhit|Facebot|WhatsApp|LinkedInBot|Twitterbot|Slackbot|TelegramBot|Discordbot|SkypeUriPreview|Googlebot|bingbot|Pinterest|redditbot|Embedly|vkShare|W3C_Validator/i;
+
+const PREFIX_TABLE = {
+  n: { table: "news", type: "news", select: "id,title,excerpt,content,image_url,short_slug" },
+  o: { table: "opportunities", type: "opportunity", select: "id,title,description,content,image_url,short_slug" },
+  p: { table: "projects", type: "project", select: "id,title,description,image_url,short_slug" },
+  d: { table: "platform_documents", type: "document", select: "id,title,description,cover_url,short_slug" },
+};
+
+function escapeHtml(s) {
+  if (!s) return "";
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+function stripHtml(s) {
+  return (s || "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ").replace(/\s+/g, " ").trim();
+}
+function absUrl(u) {
+  if (!u) return DEFAULT_IMAGE;
+  if (u.startsWith("http://") || u.startsWith("https://")) return u;
+  return `${SITE_URL}${u.startsWith("/") ? "" : "/"}${u}`;
+}
+
+async function fetchRow(table, slug, select) {
+  const url = `${SUPABASE_URL}/rest/v1/${table}?short_slug=eq.${encodeURIComponent(slug)}&select=${select}&limit=1`;
+  const r = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+  const data = await r.json();
+  return Array.isArray(data) ? data[0] : null;
+}
+
+function buildHtml({ title, description, image, pageUrl }) {
+  return `<!DOCTYPE html>
+<html lang="fr"><head>
+<meta charset="UTF-8" />
+<title>${escapeHtml(title)} | MIPROJET</title>
+<meta name="description" content="${escapeHtml(description)}" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="MIPROJET" />
+<meta property="og:locale" content="fr_FR" />
+<meta property="og:title" content="${escapeHtml(title)}" />
+<meta property="og:description" content="${escapeHtml(description)}" />
+<meta property="og:image" content="${escapeHtml(image)}" />
+<meta property="og:image:secure_url" content="${escapeHtml(image)}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="${escapeHtml(pageUrl)}" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="${escapeHtml(title)}" />
+<meta name="twitter:description" content="${escapeHtml(description)}" />
+<meta name="twitter:image" content="${escapeHtml(image)}" />
+<link rel="canonical" href="${escapeHtml(pageUrl)}" />
+<meta http-equiv="refresh" content="0;url=${escapeHtml(pageUrl)}" />
+</head><body><p>Redirection vers <a href="${escapeHtml(pageUrl)}">${escapeHtml(title)}</a>…</p></body></html>`;
+}
+
+export default async function handler(req, res) {
+  const ua = req.headers["user-agent"] || "";
+  const { prefix, slug } = req.query;
+
+  // Build canonical short URL (/n/art015/04/026 style)
+  const slugSegments = Array.isArray(slug) ? slug : (slug ? [slug] : []);
+  const flatSlug = slugSegments.join("-").replace(/\//g, "-");
+  const pageUrl = `${SITE_URL}/${prefix}/${slugSegments.join("/")}`;
+
+  // Real user → serve SPA index.html
+  if (!BOT_REGEX.test(ua)) {
+    res.setHeader("Cache-Control", "no-store");
+    // Let Vercel serve the SPA: rewrite to /index.html.
+    // Since this function already handled the route, we issue a 200 with the SPA shell.
+    try {
+      const spaResp = await fetch(`${SITE_URL}/index.html`);
+      const html = await spaResp.text();
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.status(200).send(html);
+    } catch {
+      return res.redirect(302, `/?path=${encodeURIComponent(pageUrl)}`);
+    }
+  }
+
+  // Bot → fetch metadata and serve OG HTML
+  const cfg = PREFIX_TABLE[prefix];
+  let title = "MIPROJET";
+  let description = "Plateforme Panafricaine de Structuration de Projets";
+  let image = DEFAULT_IMAGE;
+
+  try {
+    if (cfg && flatSlug) {
+      const row = await fetchRow(cfg.table, flatSlug, cfg.select);
+      if (row) {
+        title = row.title || title;
+        description = stripHtml(row.excerpt || row.description || row.content || "").slice(0, 220) || description;
+        image = absUrl(row.image_url || row.cover_url || DEFAULT_IMAGE);
+      }
+    }
+  } catch (e) {
+    console.error("social og fetch failed", e);
+  }
+
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate");
+  return res.status(200).send(buildHtml({ title, description, image, pageUrl }));
+}
