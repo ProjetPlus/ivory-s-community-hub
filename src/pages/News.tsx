@@ -15,6 +15,7 @@ import { SocialSharePopup } from "@/components/SocialSharePopup";
 import { ArticleLayout, RelatedItem } from "@/components/article/ArticleLayout";
 import { useNewsletterSubscribe } from "@/hooks/useNewsletterSubscribe";
 import { useToast } from "@/hooks/use-toast";
+import { normalizeArticleHtml } from "@/lib/sanitizeHtml";
 
 interface NewsItem {
   id: string;
@@ -126,7 +127,7 @@ const News = () => {
             prose-table:border prose-table:border-border prose-th:bg-muted prose-th:p-3 prose-td:p-3 prose-td:border prose-td:border-border
             prose-img:rounded-xl prose-img:shadow-lg prose-img:my-6
             prose-hr:border-border prose-hr:my-8"
-          dangerouslySetInnerHTML={{ __html: content }}
+          dangerouslySetInnerHTML={{ __html: normalizeArticleHtml(content) }}
         />
       );
     }
