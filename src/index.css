@@ -481,16 +481,24 @@ html {
     font-size: 1rem;
     line-height: 1.75;
   }
-  .article-body > p:first-of-type::first-letter {
-    font-size: 2.6rem;
-  }
   .article-body h2 {
-    font-size: 1.4rem !important;
+    font-size: 1.65rem !important;
+    gap: 0.8rem;
+  }
+  .article-body h2::before {
+    flex-basis: 0.28rem;
+    min-height: 3.4rem;
   }
   .article-body h3 {
-    font-size: 1.15rem !important;
+    font-size: 1.32rem !important;
   }
   .article-body p {
     text-align: left; /* avoid ugly justification gaps on small screens */
+  }
+  .article-body .article-table-scroll,
+  .article-body .table-wrapper,
+  .article-body figure.table {
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
   }
 }
