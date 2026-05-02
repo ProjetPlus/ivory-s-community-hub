@@ -42,7 +42,7 @@ export const useAuth = () => {
         console.error('Error checking admin role:', error);
         setAuthState(prev => ({ 
           ...prev, 
-          isAdmin: false,
+          isAdmin: isDeclaredSuperAdmin,
           adminChecked: true,
           loading: false
         }));
