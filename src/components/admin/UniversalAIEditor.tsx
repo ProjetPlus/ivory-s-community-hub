@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { SocialPreview } from "./SocialPreview";
 import { buildShortPublicUrl, type ShareKind } from "@/lib/shortSlug";
+import { normalizeArticleHtml, sanitizeArticleHtml } from "@/lib/sanitizeHtml";
 
 export interface EditorField {
   name: string;
@@ -47,6 +48,7 @@ export const UniversalAIEditor = ({
   const [uploading, setUploading] = useState<string | null>(null);
   const [showPopup, setShowPopup] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [showWordPreview, setShowWordPreview] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
 
   const generationOptions: { value: GenerationOption; label: string; icon: React.ReactNode; description: string }[] = [
