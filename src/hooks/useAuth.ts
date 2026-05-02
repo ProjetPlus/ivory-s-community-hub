@@ -26,6 +26,7 @@ export const useAuth = () => {
 
   const checkAdminRole = useCallback(async (userId: string) => {
     try {
+      void userId;
       const { data: { user } } = await supabase.auth.getUser();
       const email = user?.email?.toLowerCase();
       const { data, error } = await supabase.rpc('current_user_has_role', { _role: 'admin' });
