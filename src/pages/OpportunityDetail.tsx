@@ -204,7 +204,7 @@ const OpportunityDetail = () => {
           author="MIPROJET"
           dateISO={opportunity.published_at}
           viewsCount={opportunity.views_count}
-          contentHtml={opportunity.content.replace(/\n/g, "<br/>")}
+          contentHtml={opportunity.content}
           preContent={
             <div className="grid sm:grid-cols-2 gap-3 mb-8">
               {opportunity.deadline && (
