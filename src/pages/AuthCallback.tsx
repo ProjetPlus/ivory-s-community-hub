@@ -27,10 +27,10 @@ const AuthCallback = () => {
         setTimeout(() => navigate(target), 3000);
       } else {
         // Wait for auth state to settle
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
           if (event === 'SIGNED_IN') {
             setConfirmed(true);
-            resolveRedirect().then((target) => setTimeout(() => navigate(target), 3000));
+            resolveRedirect(session?.user.email).then((target) => setTimeout(() => navigate(target), 3000));
             subscription.unsubscribe();
           }
         });
