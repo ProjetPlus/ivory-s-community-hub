@@ -399,6 +399,19 @@ export const UniversalAIEditor = ({
         </DialogContent>
       </Dialog>
 
+      {/* Word-like final rendering preview */}
+      <Dialog open={showWordPreview} onOpenChange={setShowWordPreview}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><FileText className="h-5 w-5" />Aperçu Word</DialogTitle>
+          </DialogHeader>
+          <article className="article-body article-body--reading prose prose-lg max-w-none border border-border rounded-lg bg-background p-5 sm:p-8">
+            <h1 className="!mt-0 !mb-6 text-2xl sm:text-3xl font-extrabold text-foreground">{values.title || "Titre de l’article"}</h1>
+            <div dangerouslySetInnerHTML={{ __html: normalizeArticleHtml(values[contentFieldName] || "") }} />
+          </article>
+        </DialogContent>
+      </Dialog>
+
       {/* AI Generation Bar */}
       <Card className="border-primary/30 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5">
         <CardContent className="p-4">
@@ -415,6 +428,9 @@ export const UniversalAIEditor = ({
             <div className="flex gap-2">
               <Button type="button" variant="outline" size="sm" onClick={() => setShowPreview(true)}>
                 <Eye className="h-4 w-4 mr-1" />Aperçu
+              </Button>
+              <Button type="button" variant="outline" size="sm" onClick={() => setShowWordPreview(true)}>
+                <FileText className="h-4 w-4 mr-1" />Aperçu Word
               </Button>
               <Button type="button" onClick={handleGenerateClick} disabled={generating || generatingImage} size="lg" className="min-w-[160px]">
                 {generating ? <><Loader2 className="h-5 w-5 mr-2 animate-spin" />Génération...</>
@@ -467,18 +483,17 @@ export const UniversalAIEditor = ({
           <div
             ref={editorRef}
             contentEditable
-            className="min-h-[400px] p-4 border border-border rounded-b-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 prose prose-sm max-w-none prose-headings:text-foreground prose-p:text-foreground/90 prose-strong:text-foreground prose-li:text-foreground/90 prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground"
-            dangerouslySetInnerHTML={{ __html: values[contentFieldName] || '' }}
+            className="article-body min-h-[400px] p-4 border border-border rounded-b-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 prose prose-sm max-w-none"
+            dangerouslySetInnerHTML={{ __html: normalizeArticleHtml(values[contentFieldName] || '') }}
             onInput={() => {
               if (editorRef.current) {
-                onChange(contentFieldName, editorRef.current.innerHTML);
+                onChange(contentFieldName, sanitizeArticleHtml(editorRef.current.innerHTML));
               }
             }}
             onPaste={(e) => {
-              // Paste as plain text to avoid formatting issues
               e.preventDefault();
-              const text = e.clipboardData.getData('text/html') || e.clipboardData.getData('text/plain');
-              document.execCommand('insertHTML', false, text);
+              const text = e.clipboardData.getData('text/plain');
+              document.execCommand('insertHTML', false, normalizeArticleHtml(text));
               if (editorRef.current) onChange(contentFieldName, editorRef.current.innerHTML);
             }}
           />
