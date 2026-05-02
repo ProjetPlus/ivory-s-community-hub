@@ -277,18 +277,22 @@ html {
   font-size: 1.0625rem;
   line-height: 1.85;
   color: hsl(var(--foreground) / 0.92);
+  text-align: left;
+  overflow-wrap: anywhere;
 }
 
-/* Drop cap on the very first paragraph (magazine feel) */
-.article-body > p:first-of-type::first-letter {
-  float: left;
-  font-size: 3.4rem;
-  line-height: 1;
-  font-weight: 800;
-  color: hsl(var(--primary));
-  padding: 0.25rem 0.75rem 0 0;
-  margin-top: 0.25rem;
-  font-family: 'Source Sans 3', serif;
+.article-body--reading {
+  font-size: 1.125rem;
+  line-height: 1.95;
+  letter-spacing: 0;
+}
+
+.article-body p {
+  margin: 0 0 1.45rem;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  color: hsl(var(--muted-foreground));
 }
 
 /* Section dividers — subtle horizontal lines auto-inserted between H2 sections */
@@ -300,39 +304,81 @@ html {
 .article-body h2 {
   position: relative;
   scroll-margin-top: 6rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.05rem;
+  padding-left: 0 !important;
+  border-left: 0 !important;
+  margin-top: 3.25rem;
+  margin-bottom: 1.25rem;
+  font-size: clamp(1.75rem, 2.2vw, 2.35rem);
+  line-height: 1.18;
+  color: hsl(var(--foreground));
+}
+
+.article-body h2::before {
+  content: "";
+  flex: 0 0 0.34rem;
+  width: 0.34rem;
+  min-height: 4.4rem;
+  background: hsl(var(--primary));
+  border-radius: 999px;
+  margin-top: 0.15rem;
 }
 
 .article-body h2::after {
   content: "";
   display: block;
-  width: 3rem;
-  height: 3px;
-  background: hsl(var(--primary));
-  border-radius: 2px;
-  margin-top: 0.6rem;
+  position: absolute;
+  left: 1.4rem;
+  right: 0;
+  bottom: -0.75rem;
+  height: 1px;
+  background: linear-gradient(90deg, hsl(var(--primary) / 0.45), hsl(var(--border) / 0.2), transparent);
+}
+
+.article-body h3 {
+  margin-top: 2.35rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid hsl(var(--border));
+  font-size: clamp(1.38rem, 1.8vw, 1.75rem);
+  line-height: 1.25;
+  color: hsl(var(--foreground));
+}
+
+.article-body h4 {
+  margin-top: 1.85rem;
+  margin-bottom: 0.8rem;
+  color: hsl(var(--primary));
+  font-size: 1.12rem;
+  font-weight: 800;
 }
 
 /* Tables — clean Word-style with header band, zebra rows, soft borders */
+.article-body .article-table-scroll,
 .article-body .table-wrapper,
 .article-body figure.table {
   overflow-x: auto;
-  margin: 2rem 0;
-  border-radius: 0.75rem;
+  margin: 2.25rem 0;
+  border-radius: 0.5rem;
   border: 1px solid hsl(var(--border));
   box-shadow: 0 1px 3px hsl(var(--foreground) / 0.04);
+  background: hsl(var(--card));
+  -webkit-overflow-scrolling: touch;
 }
 
 .article-body table {
   width: 100%;
   border-collapse: collapse;
-  margin: 2rem 0;
+  margin: 0;
   font-size: 0.95rem;
   background: hsl(var(--card));
-  border-radius: 0.75rem;
+  border-radius: 0;
   overflow: hidden;
-  border: 1px solid hsl(var(--border));
-  display: block;
-  overflow-x: auto;
+  border: 0;
+  display: table;
+  min-width: 640px;
   white-space: normal;
 }
 
@@ -342,19 +388,21 @@ html {
 
 .article-body table thead th {
   color: hsl(var(--primary-foreground));
-  font-weight: 600;
+  font-weight: 800;
   text-align: left;
-  padding: 0.85rem 1rem;
+  padding: 0.95rem 1rem;
   font-size: 0.875rem;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  border: none;
+  letter-spacing: 0;
+  border-right: 1px solid hsl(var(--primary-foreground) / 0.22);
 }
 
 .article-body table tbody td {
-  padding: 0.85rem 1rem;
+  padding: 0.95rem 1rem;
   border-top: 1px solid hsl(var(--border));
+  border-right: 1px solid hsl(var(--border));
   vertical-align: top;
+  color: hsl(var(--foreground) / 0.88);
 }
 
 .article-body table tbody tr:nth-child(even) {
@@ -433,16 +481,24 @@ html {
     font-size: 1rem;
     line-height: 1.75;
   }
-  .article-body > p:first-of-type::first-letter {
-    font-size: 2.6rem;
-  }
   .article-body h2 {
-    font-size: 1.4rem !important;
+    font-size: 1.65rem !important;
+    gap: 0.8rem;
+  }
+  .article-body h2::before {
+    flex-basis: 0.28rem;
+    min-height: 3.4rem;
   }
   .article-body h3 {
-    font-size: 1.15rem !important;
+    font-size: 1.32rem !important;
   }
   .article-body p {
     text-align: left; /* avoid ugly justification gaps on small screens */
+  }
+  .article-body .article-table-scroll,
+  .article-body .table-wrapper,
+  .article-body figure.table {
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
   }
 }

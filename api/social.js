@@ -29,6 +29,12 @@ function absUrl(u) {
   if (u.startsWith("http://") || u.startsWith("https://")) return u;
   return `${SITE_URL}${u.startsWith("/") ? "" : "/"}${u}`;
 }
+function resolveImage(row) {
+  const raw = row?.image_url || row?.cover_url || DEFAULT_IMAGE;
+  const image = absUrl(raw);
+  if (/\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(image)) return DEFAULT_IMAGE;
+  return image;
+}
 
 async function fetchRow(table, slug, select) {
   const url = `${SUPABASE_URL}/rest/v1/${table}?short_slug=eq.${encodeURIComponent(slug)}&select=${select}&limit=1`;
@@ -50,8 +56,10 @@ function buildHtml({ title, description, image, pageUrl }) {
 <meta property="og:description" content="${escapeHtml(description)}" />
 <meta property="og:image" content="${escapeHtml(image)}" />
 <meta property="og:image:secure_url" content="${escapeHtml(image)}" />
+<meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="${escapeHtml(title)}" />
 <meta property="og:url" content="${escapeHtml(pageUrl)}" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${escapeHtml(title)}" />
@@ -98,7 +106,7 @@ export default async function handler(req, res) {
       if (row) {
         title = row.title || title;
         description = stripHtml(row.excerpt || row.description || row.content || "").slice(0, 220) || description;
-        image = absUrl(row.image_url || row.cover_url || DEFAULT_IMAGE);
+        image = resolveImage(row);
       }
     }
   } catch (e) {

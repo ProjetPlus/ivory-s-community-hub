@@ -41,9 +41,10 @@ function getOgDebugUrl(props: SocialSharePopupProps): string {
   });
 }
 
-function buildShareText(shareUrl: string, title: string, desc: string, cta: string) {
+function buildShareText(shareUrl: string, title: string, desc: string, cta: string, whatsapp = false) {
   const safeDesc = desc.trim().replace(/\s+/g, " ").slice(0, 180);
-  return `${shareUrl}\n\n${title}\n${safeDesc}\n\n👉 ${cta}`;
+  const safeTitle = whatsapp ? `*${title}*` : title;
+  return `${safeTitle}\n\n${safeDesc}\n\n👉 ${cta}\n${shareUrl}`;
 }
 
 const platforms = [
@@ -56,7 +57,7 @@ const platforms = [
     name: "WhatsApp",
     icon: "💬",
     getUrl: (shareUrl: string, title: string, desc: string, cta: string) =>
-      `https://wa.me/?text=${encodeURIComponent(buildShareText(shareUrl, title, desc, cta))}`,
+      `https://wa.me/?text=${encodeURIComponent(buildShareText(shareUrl, title, desc, cta, true))}`,
   },
   {
     name: "LinkedIn",

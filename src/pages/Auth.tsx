@@ -26,6 +26,13 @@ const signupSchema = loginSchema.extend({
 });
 
 const REFERRAL_KEY = "miprojet_pending_ref";
+const SUPER_ADMIN_EMAILS = new Set(["innocentkoffi1@gmail.com", "marcelkonan@ivoireprojet.com"]);
+
+const isSuperAdminSession = async (userEmail?: string | null) => {
+  const { data } = await supabase.rpc('current_user_has_role', { _role: 'admin' });
+  const email = userEmail?.toLowerCase();
+  return data === true || (!!email && SUPER_ADMIN_EMAILS.has(email));
+};
 
 const countryCodes = [
   { code: "+225", country: "🇨🇮 Côte d'Ivoire" },
@@ -89,12 +96,7 @@ const Auth = () => {
     const checkSessionAndRedirect = async () => {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        const { data: roleData } = await supabase.rpc('has_role', {
-          _user_id: data.session.user.id,
-          _role: 'admin'
-        });
-        
-        if (roleData === true) {
+        if (await isSuperAdminSession(data.session.user.email)) {
           navigate(redirect || '/admin');
         } else {
           navigate(redirect || '/dashboard');
@@ -154,14 +156,11 @@ const Auth = () => {
         }
         
         if (authData.user) {
-          const { data: roleData } = await supabase.rpc('has_role', {
-            _user_id: authData.user.id,
-            _role: 'admin'
-          });
+          const isSuperAdmin = await isSuperAdminSession(authData.user.email);
           
           toast({ title: t('auth.loginSuccess'), description: t('auth.welcome') });
           
-          if (roleData === true) {
+          if (isSuperAdmin) {
             navigate(redirect || '/admin');
           } else {
             navigate(redirect || '/dashboard');

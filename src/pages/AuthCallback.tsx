@@ -3,6 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle, Loader2 } from "lucide-react";
 
+const SUPER_ADMIN_EMAILS = new Set(["innocentkoffi1@gmail.com", "marcelkonan@ivoireprojet.com"]);
+
+const resolveRedirect = async (email?: string | null) => {
+  const { data } = await supabase.rpc("current_user_has_role", { _role: "admin" });
+  return data === true || (!!email && SUPER_ADMIN_EMAILS.has(email.toLowerCase())) ? "/admin" : "/dashboard";
+};
+
 const AuthCallback = () => {
   const navigate = useNavigate();
   const [confirmed, setConfirmed] = useState(false);
@@ -16,13 +23,16 @@ const AuthCallback = () => {
       
       if (session) {
         setConfirmed(true);
-        setTimeout(() => navigate('/dashboard'), 3000);
+        const target = await resolveRedirect(session.user.email);
+        setTimeout(() => navigate(target), 3000);
       } else {
         // Wait for auth state to settle
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
           if (event === 'SIGNED_IN') {
             setConfirmed(true);
-            setTimeout(() => navigate('/dashboard'), 3000);
+            setTimeout(() => {
+              resolveRedirect(session?.user.email).then((target) => setTimeout(() => navigate(target), 3000));
+            }, 0);
             subscription.unsubscribe();
           }
         });

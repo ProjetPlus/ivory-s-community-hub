@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Calendar, Clock, Eye, BookOpen, Share2, ThumbsUp, MessageSquare, Tag,
@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { resolveCover, onCoverError } from "@/lib/coverImage";
+import { normalizeArticleHtml } from "@/lib/sanitizeHtml";
 
 export interface RelatedItem {
   id: string;
@@ -92,6 +93,8 @@ export const ArticleLayout = ({
 }: ArticleLayoutProps) => {
   const navigate = useNavigate();
   const heroSrc = resolveCover(image);
+  const [readingMode, setReadingMode] = useState(true);
+  const safeContentHtml = useMemo(() => normalizeArticleHtml(contentHtml), [contentHtml]);
 
   const Stat = ({ label, value }: { label: string; value: string | number | undefined }) => (
     <Card className="border bg-card">
@@ -176,9 +179,15 @@ export const ArticleLayout = ({
 
       {preContent}
 
-      {/* Article body — Word-like professional typography */}
+      <div className="mb-6 flex justify-end">
+        <Button type="button" variant={readingMode ? "default" : "outline"} size="sm" onClick={() => setReadingMode((v) => !v)} className="gap-2">
+          <BookOpen className="h-4 w-4" /> Mode lecture
+        </Button>
+      </div>
+
+      {/* Article body — sanitized Word-like professional typography */}
       <div
-        className="article-body prose prose-lg max-w-none text-foreground/90
+        className={`article-body ${readingMode ? "article-body--reading" : ""} prose prose-lg max-w-none text-foreground/90
           prose-headings:font-bold prose-headings:text-foreground prose-headings:tracking-tight
           prose-h2:text-2xl md:prose-h2:text-[1.75rem] prose-h2:leading-snug
           prose-h2:mt-12 prose-h2:mb-5 prose-h2:pl-4 prose-h2:border-l-4 prose-h2:border-primary
@@ -198,8 +207,8 @@ export const ArticleLayout = ({
           prose-li:mb-2 prose-li:leading-relaxed prose-li:pl-1
           prose-hr:my-10 prose-hr:border-border
           prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-[0.9em] prose-code:before:content-none prose-code:after:content-none
-          prose-pre:bg-muted prose-pre:text-foreground prose-pre:rounded-lg prose-pre:p-4 prose-pre:border prose-pre:border-border"
-        dangerouslySetInnerHTML={{ __html: contentHtml }}
+          prose-pre:bg-muted prose-pre:text-foreground prose-pre:rounded-lg prose-pre:p-4 prose-pre:border prose-pre:border-border`}
+        dangerouslySetInnerHTML={{ __html: safeContentHtml }}
       />
 
       {postContent}

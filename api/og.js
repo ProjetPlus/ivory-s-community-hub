@@ -26,6 +26,18 @@ function buildShortPublicUrl(type, shortSlug, id) {
   return `${SITE_URL}/documents/${id}`;
 }
 
+function toAbsoluteUrl(value) {
+  if (!value) return DEFAULT_IMAGE;
+  if (value.startsWith("http://") || value.startsWith("https://")) return value;
+  return `${SITE_URL}${value.startsWith("/") ? "" : "/"}${value}`;
+}
+
+function resolveImage(value) {
+  const image = toAbsoluteUrl(value || DEFAULT_IMAGE);
+  if (/\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(image)) return DEFAULT_IMAGE;
+  return image;
+}
+
 async function fetchFromSupabase(table, id, fields) {
   const res = await fetch(
     `${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}&select=${fields}`,
@@ -51,8 +63,11 @@ function generateHTML(title, description, image, url) {
   <meta property="og:title" content="${escapeHtml(title)}">
   <meta property="og:description" content="${escapeHtml(description)}">
   <meta property="og:image" content="${escapeHtml(image)}">
+  <meta property="og:image:secure_url" content="${escapeHtml(image)}">
+  <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="${escapeHtml(title)}">
   <meta property="og:url" content="${escapeHtml(url)}">
   <meta property="og:site_name" content="MIPROJET">
   <meta property="og:locale" content="fr_FR">
@@ -91,7 +106,7 @@ export default async function handler(req, res) {
       if (data) {
         title = data.title;
         description = stripHtml(data.excerpt) || stripHtml(data.content).substring(0, 220) || description;
-        image = data.image_url || DEFAULT_IMAGE;
+        image = resolveImage(data.image_url);
         url = buildShortPublicUrl(type, data.short_slug, id);
       }
     } else if (type === "opportunity") {
@@ -99,7 +114,7 @@ export default async function handler(req, res) {
       if (data) {
         title = data.title;
         description = stripHtml(data.description) || stripHtml(data.content).substring(0, 220) || description;
-        image = data.image_url || DEFAULT_IMAGE;
+        image = resolveImage(data.image_url);
         url = buildShortPublicUrl(type, data.short_slug, id);
       }
     } else if (type === "project") {
@@ -107,7 +122,7 @@ export default async function handler(req, res) {
       if (data) {
         title = data.title;
         description = stripHtml(data.description).substring(0, 220) || description;
-        image = data.image_url || DEFAULT_IMAGE;
+        image = resolveImage(data.image_url);
         url = buildShortPublicUrl(type, data.short_slug, id);
       }
     } else if (type === "document") {
@@ -115,7 +130,7 @@ export default async function handler(req, res) {
       if (data) {
         title = data.title;
         description = stripHtml(data.description).substring(0, 220) || description;
-        image = data.cover_url || DEFAULT_IMAGE;
+        image = resolveImage(data.cover_url);
         url = buildShortPublicUrl(type, data.short_slug, id);
       }
     }

@@ -10,6 +10,11 @@ interface AuthState {
   adminChecked: boolean;
 }
 
+const SUPER_ADMIN_EMAILS = new Set([
+  'innocentkoffi1@gmail.com',
+  'marcelkonan@ivoireprojet.com',
+]);
+
 export const useAuth = () => {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
@@ -21,15 +26,16 @@ export const useAuth = () => {
 
   const checkAdminRole = useCallback(async (userId: string) => {
     try {
-      const { data, error } = await supabase.rpc('has_role', {
-        _user_id: userId,
-        _role: 'admin'
-      });
+      void userId;
+      const { data: { user } } = await supabase.auth.getUser();
+      const email = user?.email?.toLowerCase();
+      const { data, error } = await supabase.rpc('current_user_has_role', { _role: 'admin' });
+      const isDeclaredSuperAdmin = !!email && SUPER_ADMIN_EMAILS.has(email);
       
       if (!error) {
         setAuthState(prev => ({ 
           ...prev, 
-          isAdmin: data === true,
+          isAdmin: data === true || isDeclaredSuperAdmin,
           adminChecked: true,
           loading: false
         }));
@@ -37,7 +43,7 @@ export const useAuth = () => {
         console.error('Error checking admin role:', error);
         setAuthState(prev => ({ 
           ...prev, 
-          isAdmin: false,
+          isAdmin: isDeclaredSuperAdmin,
           adminChecked: true,
           loading: false
         }));
