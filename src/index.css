@@ -356,26 +356,29 @@ html {
 }
 
 /* Tables — clean Word-style with header band, zebra rows, soft borders */
+.article-body .article-table-scroll,
 .article-body .table-wrapper,
 .article-body figure.table {
   overflow-x: auto;
-  margin: 2rem 0;
-  border-radius: 0.75rem;
+  margin: 2.25rem 0;
+  border-radius: 0.5rem;
   border: 1px solid hsl(var(--border));
   box-shadow: 0 1px 3px hsl(var(--foreground) / 0.04);
+  background: hsl(var(--card));
+  -webkit-overflow-scrolling: touch;
 }
 
 .article-body table {
   width: 100%;
   border-collapse: collapse;
-  margin: 2rem 0;
+  margin: 0;
   font-size: 0.95rem;
   background: hsl(var(--card));
-  border-radius: 0.75rem;
+  border-radius: 0;
   overflow: hidden;
-  border: 1px solid hsl(var(--border));
-  display: block;
-  overflow-x: auto;
+  border: 0;
+  display: table;
+  min-width: 640px;
   white-space: normal;
 }
 
@@ -385,19 +388,21 @@ html {
 
 .article-body table thead th {
   color: hsl(var(--primary-foreground));
-  font-weight: 600;
+  font-weight: 800;
   text-align: left;
-  padding: 0.85rem 1rem;
+  padding: 0.95rem 1rem;
   font-size: 0.875rem;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  border: none;
+  letter-spacing: 0;
+  border-right: 1px solid hsl(var(--primary-foreground) / 0.22);
 }
 
 .article-body table tbody td {
-  padding: 0.85rem 1rem;
+  padding: 0.95rem 1rem;
   border-top: 1px solid hsl(var(--border));
+  border-right: 1px solid hsl(var(--border));
   vertical-align: top;
+  color: hsl(var(--foreground) / 0.88);
 }
 
 .article-body table tbody tr:nth-child(even) {
