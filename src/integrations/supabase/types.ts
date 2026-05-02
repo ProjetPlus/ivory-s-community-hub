@@ -1639,6 +1639,7 @@ export type Database = {
         Args: { _prefix: string; _rank: number; _ts: string }
         Returns: string
       }
+      current_user_has_role: { Args: { _role: string }; Returns: boolean }
       get_admin_payments: {
         Args: never
         Returns: {
