@@ -28,7 +28,7 @@ const signupSchema = loginSchema.extend({
 const REFERRAL_KEY = "miprojet_pending_ref";
 const SUPER_ADMIN_EMAILS = new Set(["innocentkoffi1@gmail.com", "marcelkonan@ivoireprojet.com"]);
 
-const isSuperAdminSession = async (userId: string, userEmail?: string | null) => {
+const isSuperAdminSession = async (userEmail?: string | null) => {
   const { data } = await supabase.rpc('current_user_has_role', { _role: 'admin' });
   const email = userEmail?.toLowerCase();
   return data === true || (!!email && SUPER_ADMIN_EMAILS.has(email));
@@ -96,7 +96,7 @@ const Auth = () => {
     const checkSessionAndRedirect = async () => {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        if (await isSuperAdminSession(data.session.user.id, data.session.user.email)) {
+        if (await isSuperAdminSession(data.session.user.email)) {
           navigate(redirect || '/admin');
         } else {
           navigate(redirect || '/dashboard');
@@ -156,7 +156,7 @@ const Auth = () => {
         }
         
         if (authData.user) {
-          const isSuperAdmin = await isSuperAdminSession(authData.user.id, authData.user.email);
+          const isSuperAdmin = await isSuperAdminSession(authData.user.email);
           
           toast({ title: t('auth.loginSuccess'), description: t('auth.welcome') });
           
