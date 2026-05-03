@@ -8,7 +8,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const SITE_URL = "https://ivoireprojet.com";
 const DEFAULT_IMAGE = `${SITE_URL}/miprojet-og-cover.png`;
 
-const BOT_REGEX = /facebookexternalhit|Facebot|WhatsApp|LinkedInBot|Twitterbot|Slackbot|TelegramBot|Discordbot|SkypeUriPreview|Googlebot|bingbot|Pinterest|redditbot|Embedly|vkShare|W3C_Validator/i;
+const BOT_REGEX = /facebookexternalhit|Facebot|Instagram|WhatsApp|LinkedInBot|Twitterbot|Slackbot|TelegramBot|Discordbot|SkypeUriPreview|Googlebot|GoogleImageProxy|Google-HTTP-Java-Client|Google-Apps-Script|Feedfetcher-Google|Gmail|bingbot|Pinterest|redditbot|Embedly|vkShare|W3C_Validator/i;
 
 const PREFIX_TABLE = {
   n: { table: "news", type: "news", select: "id,title,excerpt,content,image_url,short_slug" },
