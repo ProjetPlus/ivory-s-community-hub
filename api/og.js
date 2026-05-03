@@ -38,6 +38,24 @@ function resolveImage(value) {
   return image;
 }
 
+function buildCoverProxy(type, id, image) {
+  if (!id || !image || image === DEFAULT_IMAGE) return DEFAULT_IMAGE;
+  const params = new URLSearchParams({ type, id });
+  return `${SITE_URL}/api/og-cover?${params.toString()}`;
+}
+
+function ctaFor(type) {
+  if (type === "news") return "Lire l'article complet sur MIPROJET";
+  if (type === "opportunity") return "Découvrir l'opportunité sur MIPROJET";
+  if (type === "project") return "Découvrir le projet sur MIPROJET";
+  return "Découvrir sur MIPROJET";
+}
+
+function buildSocialDescription(summary, type, url) {
+  const cleanSummary = stripHtml(summary).replace(/\s+/g, " ").slice(0, 190);
+  return `${cleanSummary || "Plateforme Panafricaine de Structuration de Projets"} — 👉 ${ctaFor(type)} : ${url}`.slice(0, 320);
+}
+
 async function fetchFromSupabase(table, id, fields) {
   const res = await fetch(
     `${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}&select=${fields}`,
@@ -64,7 +82,6 @@ function generateHTML(title, description, image, url) {
   <meta property="og:description" content="${escapeHtml(description)}">
   <meta property="og:image" content="${escapeHtml(image)}">
   <meta property="og:image:secure_url" content="${escapeHtml(image)}">
-  <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="${escapeHtml(title)}">
@@ -105,33 +122,33 @@ export default async function handler(req, res) {
       const data = await fetchFromSupabase("news", id, "title,excerpt,content,image_url,short_slug");
       if (data) {
         title = data.title;
-        description = stripHtml(data.excerpt) || stripHtml(data.content).substring(0, 220) || description;
-        image = resolveImage(data.image_url);
         url = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.excerpt || data.content, type, url);
+        image = buildCoverProxy(type, id, resolveImage(data.image_url));
       }
     } else if (type === "opportunity") {
       const data = await fetchFromSupabase("opportunities", id, "title,description,content,image_url,short_slug");
       if (data) {
         title = data.title;
-        description = stripHtml(data.description) || stripHtml(data.content).substring(0, 220) || description;
-        image = resolveImage(data.image_url);
         url = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.description || data.content, type, url);
+        image = buildCoverProxy(type, id, resolveImage(data.image_url));
       }
     } else if (type === "project") {
       const data = await fetchFromSupabase("projects", id, "title,description,image_url,short_slug");
       if (data) {
         title = data.title;
-        description = stripHtml(data.description).substring(0, 220) || description;
-        image = resolveImage(data.image_url);
         url = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.description, type, url);
+        image = buildCoverProxy(type, id, resolveImage(data.image_url));
       }
     } else if (type === "document") {
       const data = await fetchFromSupabase("platform_documents", id, "title,description,cover_url,short_slug");
       if (data) {
         title = data.title;
-        description = stripHtml(data.description).substring(0, 220) || description;
-        image = resolveImage(data.cover_url);
         url = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.description, type, url);
+        image = buildCoverProxy(type, id, resolveImage(data.cover_url));
       }
     }
   } catch (e) {

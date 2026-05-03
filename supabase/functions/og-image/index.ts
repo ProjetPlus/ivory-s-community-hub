@@ -40,6 +40,12 @@ const toAbsoluteUrl = (value: string, fallbackBase: string) => {
   return `${fallbackBase}${value.startsWith("/") ? "" : "/"}${value}`;
 };
 
+const buildCoverProxy = (type: string, id: string | null | undefined, image: string) => {
+  if (!id || !image || image === DEFAULT_IMAGE) return DEFAULT_IMAGE;
+  const params = new URLSearchParams({ type, id });
+  return `${SITE_URL}/api/og-cover?${params.toString()}`;
+};
+
 const stripHtml = (value: string | null | undefined) =>
   (value || "")
     .replace(/<[^>]*>/g, " ")
@@ -61,6 +67,12 @@ const buildShortPublicUrl = (type: string, shortSlug?: string | null, fallbackId
   if (type === "project") return `${SITE_URL}/projects/${fallbackId}`;
   if (type === "document" || type === "ebook") return `${SITE_URL}/documents/${fallbackId}`;
   return SITE_URL;
+};
+
+const buildSocialDescription = (summary: string, type: string, pageUrl: string) => {
+  const cleanSummary = stripHtml(summary).replace(/\s+/g, " ").slice(0, 190);
+  const cta = ctaByType[type] || "Découvrir sur MIPROJET";
+  return `${cleanSummary || "Plateforme Panafricaine de Structuration de Projets"} — 👉 ${cta} : ${pageUrl}`.slice(0, 320);
 };
 
 const buildHtml = ({
@@ -87,8 +99,10 @@ const buildHtml = ({
   <meta property="og:description" content="${escapeHtml(description)}" />
   <meta property="og:image" content="${escapeHtml(image)}" />
   <meta property="og:image:secure_url" content="${escapeHtml(image)}" />
+  <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="${escapeHtml(title)}" />
   <meta property="og:url" content="${escapeHtml(pageUrl)}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${escapeHtml(title)}" />
@@ -173,44 +187,42 @@ Deno.serve(async (req) => {
       const { data } = await supabase.from("news").select("title, excerpt, content, image_url, short_slug").eq("id", id).single();
       if (data) {
         title = data.title;
-        description = stripHtml(data.excerpt) || stripHtml(data.content).substring(0, 220) || description;
-        image = data.image_url || DEFAULT_IMAGE;
         pageUrl = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.excerpt || data.content || "", type, pageUrl);
+        image = buildCoverProxy(type, id, toAbsoluteUrl(data.image_url || DEFAULT_IMAGE, SITE_URL) || DEFAULT_IMAGE);
       }
     } else if (type === "opportunity") {
       const { data } = await supabase.from("opportunities").select("title, description, content, image_url, short_slug").eq("id", id).single();
       if (data) {
         title = data.title;
-        description = stripHtml(data.description) || stripHtml(data.content).substring(0, 220) || description;
-        image = data.image_url || DEFAULT_IMAGE;
         pageUrl = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.description || data.content || "", type, pageUrl);
+        image = buildCoverProxy(type, id, toAbsoluteUrl(data.image_url || DEFAULT_IMAGE, SITE_URL) || DEFAULT_IMAGE);
       }
     } else if (type === "project") {
       const { data } = await supabase.from("projects").select("title, description, image_url, short_slug").eq("id", id).single();
       if (data) {
         title = data.title;
-        description = stripHtml(data.description).substring(0, 220) || description;
-        image = data.image_url || DEFAULT_IMAGE;
         pageUrl = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.description || "", type, pageUrl);
+        image = buildCoverProxy(type, id, toAbsoluteUrl(data.image_url || DEFAULT_IMAGE, SITE_URL) || DEFAULT_IMAGE);
       }
     } else if (type === "document" || type === "ebook") {
       const { data } = await supabase.from("platform_documents").select("title, description, cover_url, short_slug").eq("id", id).single();
       if (data) {
         title = data.title;
-        description = stripHtml(data.description).substring(0, 220) || description;
-        image = data.cover_url || DEFAULT_IMAGE;
         pageUrl = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.description || "", type, pageUrl);
+        image = buildCoverProxy(type, id, toAbsoluteUrl(data.cover_url || DEFAULT_IMAGE, SITE_URL) || DEFAULT_IMAGE);
       }
     }
 
-    const cta = ctaByType[type] || "Découvrir sur MIPROJET";
-    const seoDescription = `${description} — ${cta}`.substring(0, 220);
     const absoluteImage = toAbsoluteUrl(image || DEFAULT_IMAGE, SITE_URL) || DEFAULT_IMAGE;
 
     if (format === "json") {
       const jsonHeaders = new Headers(corsHeaders);
       jsonHeaders.set("content-type", "application/json; charset=utf-8");
-      return new Response(JSON.stringify({ title, description: seoDescription, image: absoluteImage, url: pageUrl }), {
+      return new Response(JSON.stringify({ title, description, image: absoluteImage, url: pageUrl }), {
         headers: jsonHeaders,
       });
     }
@@ -226,7 +238,7 @@ Deno.serve(async (req) => {
     const htmlHeaders = new Headers(corsHeaders);
     htmlHeaders.set("content-type", "text/html; charset=utf-8");
     htmlHeaders.set("cache-control", "public, max-age=300");
-    return new Response(buildHtml({ title, description: seoDescription, image: absoluteImage, pageUrl }), {
+    return new Response(buildHtml({ title, description, image: absoluteImage, pageUrl }), {
       headers: htmlHeaders,
     });
   } catch (error) {
