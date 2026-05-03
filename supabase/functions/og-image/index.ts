@@ -211,20 +211,18 @@ Deno.serve(async (req) => {
       const { data } = await supabase.from("platform_documents").select("title, description, cover_url, short_slug").eq("id", id).single();
       if (data) {
         title = data.title;
-        description = stripHtml(data.description).substring(0, 220) || description;
-        image = data.cover_url || DEFAULT_IMAGE;
         pageUrl = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.description || "", type, pageUrl);
+        image = buildCoverProxy(type, id, toAbsoluteUrl(data.cover_url || DEFAULT_IMAGE, SITE_URL) || DEFAULT_IMAGE);
       }
     }
 
-    const cta = ctaByType[type] || "Découvrir sur MIPROJET";
-    const seoDescription = `${description} — ${cta}`.substring(0, 220);
     const absoluteImage = toAbsoluteUrl(image || DEFAULT_IMAGE, SITE_URL) || DEFAULT_IMAGE;
 
     if (format === "json") {
       const jsonHeaders = new Headers(corsHeaders);
       jsonHeaders.set("content-type", "application/json; charset=utf-8");
-      return new Response(JSON.stringify({ title, description: seoDescription, image: absoluteImage, url: pageUrl }), {
+      return new Response(JSON.stringify({ title, description, image: absoluteImage, url: pageUrl }), {
         headers: jsonHeaders,
       });
     }
@@ -240,7 +238,7 @@ Deno.serve(async (req) => {
     const htmlHeaders = new Headers(corsHeaders);
     htmlHeaders.set("content-type", "text/html; charset=utf-8");
     htmlHeaders.set("cache-control", "public, max-age=300");
-    return new Response(buildHtml({ title, description: seoDescription, image: absoluteImage, pageUrl }), {
+    return new Response(buildHtml({ title, description, image: absoluteImage, pageUrl }), {
       headers: htmlHeaders,
     });
   } catch (error) {
