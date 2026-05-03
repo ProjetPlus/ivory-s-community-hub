@@ -187,25 +187,25 @@ Deno.serve(async (req) => {
       const { data } = await supabase.from("news").select("title, excerpt, content, image_url, short_slug").eq("id", id).single();
       if (data) {
         title = data.title;
-        description = stripHtml(data.excerpt) || stripHtml(data.content).substring(0, 220) || description;
-        image = data.image_url || DEFAULT_IMAGE;
         pageUrl = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.excerpt || data.content || "", type, pageUrl);
+        image = buildCoverProxy(type, id, toAbsoluteUrl(data.image_url || DEFAULT_IMAGE, SITE_URL) || DEFAULT_IMAGE);
       }
     } else if (type === "opportunity") {
       const { data } = await supabase.from("opportunities").select("title, description, content, image_url, short_slug").eq("id", id).single();
       if (data) {
         title = data.title;
-        description = stripHtml(data.description) || stripHtml(data.content).substring(0, 220) || description;
-        image = data.image_url || DEFAULT_IMAGE;
         pageUrl = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.description || data.content || "", type, pageUrl);
+        image = buildCoverProxy(type, id, toAbsoluteUrl(data.image_url || DEFAULT_IMAGE, SITE_URL) || DEFAULT_IMAGE);
       }
     } else if (type === "project") {
       const { data } = await supabase.from("projects").select("title, description, image_url, short_slug").eq("id", id).single();
       if (data) {
         title = data.title;
-        description = stripHtml(data.description).substring(0, 220) || description;
-        image = data.image_url || DEFAULT_IMAGE;
         pageUrl = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.description || "", type, pageUrl);
+        image = buildCoverProxy(type, id, toAbsoluteUrl(data.image_url || DEFAULT_IMAGE, SITE_URL) || DEFAULT_IMAGE);
       }
     } else if (type === "document" || type === "ebook") {
       const { data } = await supabase.from("platform_documents").select("title, description, cover_url, short_slug").eq("id", id).single();
