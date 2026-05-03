@@ -6,10 +6,10 @@ const SITE_URL = "https://ivoireprojet.com";
 const DEFAULT_IMAGE = `${SITE_URL}/miprojet-og-cover.png`;
 
 const PREFIX_TABLE = {
-  n: { table: "news", select: "id,image_url,cover_url,short_slug" },
-  o: { table: "opportunities", select: "id,image_url,cover_url,short_slug" },
-  p: { table: "projects", select: "id,image_url,cover_url,short_slug" },
-  d: { table: "platform_documents", select: "id,image_url,cover_url,short_slug" },
+  n: { table: "news", select: "id,image_url,short_slug" },
+  o: { table: "opportunities", select: "id,image_url,short_slug" },
+  p: { table: "projects", select: "id,image_url,short_slug" },
+  d: { table: "platform_documents", select: "id,cover_url,short_slug" },
 };
 
 const TYPE_PREFIX = { news: "n", opportunity: "o", project: "p", document: "d", ebook: "d" };
