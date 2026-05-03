@@ -122,25 +122,25 @@ export default async function handler(req, res) {
       const data = await fetchFromSupabase("news", id, "title,excerpt,content,image_url,short_slug");
       if (data) {
         title = data.title;
-        description = stripHtml(data.excerpt) || stripHtml(data.content).substring(0, 220) || description;
-        image = resolveImage(data.image_url);
         url = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.excerpt || data.content, type, url);
+        image = buildCoverProxy(type, id, resolveImage(data.image_url));
       }
     } else if (type === "opportunity") {
       const data = await fetchFromSupabase("opportunities", id, "title,description,content,image_url,short_slug");
       if (data) {
         title = data.title;
-        description = stripHtml(data.description) || stripHtml(data.content).substring(0, 220) || description;
-        image = resolveImage(data.image_url);
         url = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.description || data.content, type, url);
+        image = buildCoverProxy(type, id, resolveImage(data.image_url));
       }
     } else if (type === "project") {
       const data = await fetchFromSupabase("projects", id, "title,description,image_url,short_slug");
       if (data) {
         title = data.title;
-        description = stripHtml(data.description).substring(0, 220) || description;
-        image = resolveImage(data.image_url);
         url = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.description, type, url);
+        image = buildCoverProxy(type, id, resolveImage(data.image_url));
       }
     } else if (type === "document") {
       const data = await fetchFromSupabase("platform_documents", id, "title,description,cover_url,short_slug");
