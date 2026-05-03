@@ -40,6 +40,12 @@ const toAbsoluteUrl = (value: string, fallbackBase: string) => {
   return `${fallbackBase}${value.startsWith("/") ? "" : "/"}${value}`;
 };
 
+const buildCoverProxy = (type: string, id: string | null | undefined, image: string) => {
+  if (!id || !image || image === DEFAULT_IMAGE) return DEFAULT_IMAGE;
+  const params = new URLSearchParams({ type, id });
+  return `${SITE_URL}/api/og-cover?${params.toString()}`;
+};
+
 const stripHtml = (value: string | null | undefined) =>
   (value || "")
     .replace(/<[^>]*>/g, " ")
@@ -61,6 +67,12 @@ const buildShortPublicUrl = (type: string, shortSlug?: string | null, fallbackId
   if (type === "project") return `${SITE_URL}/projects/${fallbackId}`;
   if (type === "document" || type === "ebook") return `${SITE_URL}/documents/${fallbackId}`;
   return SITE_URL;
+};
+
+const buildSocialDescription = (summary: string, type: string, pageUrl: string) => {
+  const cleanSummary = stripHtml(summary).replace(/\s+/g, " ").slice(0, 190);
+  const cta = ctaByType[type] || "Découvrir sur MIPROJET";
+  return `${cleanSummary || "Plateforme Panafricaine de Structuration de Projets"}\n\n👉 ${cta} : ${pageUrl}`.slice(0, 320);
 };
 
 const buildHtml = ({
@@ -87,8 +99,10 @@ const buildHtml = ({
   <meta property="og:description" content="${escapeHtml(description)}" />
   <meta property="og:image" content="${escapeHtml(image)}" />
   <meta property="og:image:secure_url" content="${escapeHtml(image)}" />
+  <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="${escapeHtml(title)}" />
   <meta property="og:url" content="${escapeHtml(pageUrl)}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${escapeHtml(title)}" />
