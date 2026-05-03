@@ -146,9 +146,9 @@ export default async function handler(req, res) {
       const data = await fetchFromSupabase("platform_documents", id, "title,description,cover_url,short_slug");
       if (data) {
         title = data.title;
-        description = stripHtml(data.description).substring(0, 220) || description;
-        image = resolveImage(data.cover_url);
         url = buildShortPublicUrl(type, data.short_slug, id);
+        description = buildSocialDescription(data.description, type, url);
+        image = buildCoverProxy(type, id, resolveImage(data.cover_url));
       }
     }
   } catch (e) {
