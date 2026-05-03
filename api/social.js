@@ -22,7 +22,14 @@ function escapeHtml(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 function stripHtml(s) {
-  return (s || "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ").replace(/\s+/g, " ").trim();
+  return (s || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&#39;/gi, "'")
+    .replace(/&quot;/gi, '"')
+    .replace(/\s+/g, " ")
+    .trim();
 }
 function absUrl(u) {
   if (!u) return DEFAULT_IMAGE;
@@ -34,6 +41,31 @@ function resolveImage(row) {
   const image = absUrl(raw);
   if (/\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(image)) return DEFAULT_IMAGE;
   return image;
+}
+
+function buildCoverProxy({ prefix, flatSlug, id, image }) {
+  if (!image || image === DEFAULT_IMAGE) return DEFAULT_IMAGE;
+  const params = new URLSearchParams();
+  if (prefix && flatSlug) {
+    params.set("prefix", prefix);
+    params.set("slug", flatSlug);
+  } else if (id) {
+    params.set("id", id);
+  }
+  return `${SITE_URL}/api/og-cover?${params.toString()}`;
+}
+
+function ctaFor(type) {
+  if (type === "news") return "Lire l'article complet sur MIPROJET";
+  if (type === "opportunity") return "Découvrir l'opportunité sur MIPROJET";
+  if (type === "project") return "Découvrir le projet sur MIPROJET";
+  return "Découvrir sur MIPROJET";
+}
+
+function buildSocialDescription(summary, type, pageUrl) {
+  const cleanSummary = stripHtml(summary).replace(/\s+/g, " ").slice(0, 190);
+  const cta = ctaFor(type);
+  return `${cleanSummary || "Plateforme Panafricaine de Structuration de Projets"}\n\n👉 ${cta} : ${pageUrl}`.slice(0, 320);
 }
 
 async function fetchRow(table, slug, select) {
@@ -56,7 +88,6 @@ function buildHtml({ title, description, image, pageUrl }) {
 <meta property="og:description" content="${escapeHtml(description)}" />
 <meta property="og:image" content="${escapeHtml(image)}" />
 <meta property="og:image:secure_url" content="${escapeHtml(image)}" />
-<meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content="${escapeHtml(title)}" />
