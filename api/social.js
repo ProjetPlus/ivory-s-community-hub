@@ -130,14 +130,17 @@ export default async function handler(req, res) {
   let title = "MIPROJET";
   let description = "Plateforme Panafricaine de Structuration de Projets";
   let image = DEFAULT_IMAGE;
+  let rowId = null;
 
   try {
     if (cfg && flatSlug) {
       const row = await fetchRow(cfg.table, flatSlug, cfg.select);
       if (row) {
+        rowId = row.id;
         title = row.title || title;
-        description = stripHtml(row.excerpt || row.description || row.content || "").slice(0, 220) || description;
-        image = resolveImage(row);
+        const rawImage = resolveImage(row);
+        image = buildCoverProxy({ prefix, flatSlug, id: row.id, image: rawImage });
+        description = buildSocialDescription(row.excerpt || row.description || row.content || "", cfg.type, pageUrl);
       }
     }
   } catch (e) {
