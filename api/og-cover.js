@@ -51,7 +51,7 @@ async function proxyJpeg(imageUrl) {
     return sharp(input)
       .rotate()
       .resize(1200, 630, { fit: "cover", position: "centre" })
-      .jpeg({ quality: 84, mozjpeg: true })
+      .jpeg({ quality: 78, progressive: false, mozjpeg: true })
       .toBuffer();
   } finally {
     clearTimeout(timeout);
