@@ -72,7 +72,7 @@ const buildShortPublicUrl = (type: string, shortSlug?: string | null, fallbackId
 const buildSocialDescription = (summary: string, type: string, pageUrl: string) => {
   const cleanSummary = stripHtml(summary).replace(/\s+/g, " ").slice(0, 190);
   const cta = ctaByType[type] || "Découvrir sur MIPROJET";
-  return `${cleanSummary || "Plateforme Panafricaine de Structuration de Projets"}\n\n👉 ${cta} : ${pageUrl}`.slice(0, 320);
+  return `${cleanSummary || "Plateforme Panafricaine de Structuration de Projets"} — 👉 ${cta} : ${pageUrl}`.slice(0, 320);
 };
 
 const buildHtml = ({
