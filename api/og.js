@@ -53,7 +53,7 @@ function ctaFor(type) {
 
 function buildSocialDescription(summary, type, url) {
   const cleanSummary = stripHtml(summary).replace(/\s+/g, " ").slice(0, 190);
-  return `${cleanSummary || "Plateforme Panafricaine de Structuration de Projets"}\n\n👉 ${ctaFor(type)} : ${url}`.slice(0, 320);
+  return `${cleanSummary || "Plateforme Panafricaine de Structuration de Projets"} — 👉 ${ctaFor(type)} : ${url}`.slice(0, 320);
 }
 
 async function fetchFromSupabase(table, id, fields) {
